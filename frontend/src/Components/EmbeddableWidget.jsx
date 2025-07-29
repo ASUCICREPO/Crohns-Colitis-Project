@@ -1,0 +1,20 @@
+import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import { LanguageProvider } from '../utilities/LanguageContext';
+import { TranscriptProvider } from '../utilities/TranscriptContext';
+import FloatingChatWidget from './FloatingChatWidget';
+import theme from '../theme';
+
+const EmbeddableWidget = () => {
+  return (
+    <ThemeProvider theme={theme}>
+      <LanguageProvider>
+        <TranscriptProvider>
+          <FloatingChatWidget />
+        </TranscriptProvider>
+      </LanguageProvider>
+    </ThemeProvider>
+  );
+};
+
+export default EmbeddableWidget;

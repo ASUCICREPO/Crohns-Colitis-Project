@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disability Rights Chat Widget - Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .demo-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #004D77; }
+        .integration-code {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #004D77;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-content">
+        <h1>Disability Rights Texas - Chat Widget Demo</h1>
+        <p>This page demonstrates how the chat widget appears on your website.</p>
+        
+        <h2>Integration Instructions</h2>
+        <p>To add this widget to your website, include this code before the closing &lt;/body&gt; tag:</p>
+        
+        <div class="integration-code">&lt;script src="https://your-domain.com/widget.js" data-auto-init="true"&gt;&lt;/script&gt;</div>
+        
+        <p>Or initialize manually:</p>
+        <div class="integration-code">&lt;script src="https://your-domain.com/widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  DisabilityRightsChatWidget.init();
+&lt;/script&gt;</div>
+
+        <h2>Features</h2>
+        <ul>
+            <li>Floating chat button in bottom-right corner</li>
+            <li>Expandable chat window (small → large)</li>
+            <li>Cross-browser compatible</li>
+            <li>Mobile responsive</li>
+            <li>Session-based conversation persistence</li>
+        </ul>
+
+        <p>Look for the chat button in the bottom-right corner of this page!</p>
+    </div>
+
+    <!-- Widget Integration -->
+    <script>
+        // Simulate loading the widget from build
+        // In production, this would be: <script src="/static/js/widget.js" data-auto-init="true"></script>
+        
+        // For demo purposes, we'll load the development version
+        if (window.location.hostname === 'localhost') {
+            const script = document.createElement('script');
+            script.src = '/static/js/bundle.js';
+            script.onload = function() {
+                if (window.DisabilityRightsChatWidget) {
+                    window.DisabilityRightsChatWidget.init();
+                }
+            };
+            document.head.appendChild(script);
+        }
+    </script>
+</body>
+</html>

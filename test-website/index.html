@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Website - Home</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; }
+        nav { background: #004D77; padding: 15px; margin: -40px -40px 30px -40px; border-radius: 8px 8px 0 0; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        h1 { color: #004D77; }
+        .page-content { min-height: 400px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="services.html">Services</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        
+        <div class="page-content">
+            <h1>Welcome to Test Website - Home Page</h1>
+            <p>This is the home page of our test website. The floating chat widget should appear in the bottom-right corner.</p>
+            
+            <h2>Test Instructions:</h2>
+            <ol>
+                <li>Look for the chat button in the bottom-right corner</li>
+                <li>Click it to open the chat widget</li>
+                <li>Send a message and get a response</li>
+                <li>Navigate to other pages using the menu above</li>
+                <li>Verify that your conversation persists across pages</li>
+                <li>Try expanding/collapsing the chat window</li>
+            </ol>
+            
+            <p><strong>Navigate to:</strong></p>
+            <ul>
+                <li><a href="about.html">About Page</a> - Continue your conversation here</li>
+                <li><a href="services.html">Services Page</a> - Chat should persist</li>
+                <li><a href="contact.html">Contact Page</a> - Same conversation continues</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Floating Chat Widget -->
+    <script>
+        window.addEventListener('load', function() {
+            const iframe = document.createElement('iframe');
+            iframe.src = 'http://localhost:3000/?widget=true';
+            iframe.style.cssText = 'position:fixed;bottom:0;right:0;width:100px;height:100px;border:none;z-index:1000;background:transparent;';
+            iframe.id = 'chat-widget-frame';
+            document.body.appendChild(iframe);
+            
+            // Handle iframe resizing based on chat state
+            window.addEventListener('message', function(event) {
+                if (event.data.type === 'CHAT_OPENED') {
+                    iframe.style.width = '450px';
+                    iframe.style.height = '600px';
+                } else if (event.data.type === 'CHAT_CLOSED') {
+                    iframe.style.width = '100px';
+                    iframe.style.height = '100px';
+                } else if (event.data.type === 'CHAT_EXPANDED') {
+                    iframe.style.width = '90vw';
+                    iframe.style.height = '90vh';
+                    iframe.style.maxWidth = '1200px';
+                    iframe.style.maxHeight = '900px';
+                } else if (event.data.type === 'CHAT_COLLAPSED') {
+                    iframe.style.width = '450px';
+                    iframe.style.height = '600px';
+                    iframe.style.maxWidth = 'none';
+                    iframe.style.maxHeight = 'none';
+                }
+            });
+            
+            console.log('Chat widget initialized on Home page');
+        });
+    </script>
+</body>
+</html>

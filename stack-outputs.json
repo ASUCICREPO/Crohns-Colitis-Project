@@ -1,0 +1,22 @@
+[
+    {
+        "OutputKey": "ChatLambdaFunction",
+        "OutputValue": "arn:aws:lambda:us-west-2:613860946470:function:chatFunction",
+        "Description": "Chat Lambda Function ARN"
+    },
+    {
+        "OutputKey": "ChatEndpoint",
+        "OutputValue": "https://bfp4dmry6c.execute-api.us-west-2.amazonaws.com/prod/chat",
+        "Description": "Chat API endpoint URL"
+    },
+    {
+        "OutputKey": "ApiEndpoint",
+        "OutputValue": "https://bfp4dmry6c.execute-api.us-west-2.amazonaws.com/prod/",
+        "Description": "API Gateway endpoint URL for Prod stage"
+    },
+    {
+        "OutputKey": "EmailEndpoint",
+        "OutputValue": "https://bfp4dmry6c.execute-api.us-west-2.amazonaws.com/prod/email",
+        "Description": "Email collection endpoint URL"
+    }
+]
