@@ -67,11 +67,14 @@ POLICY_NAME="${PROJECT_NAME}-deployment-policy"
 echo "Checking for IAM role: $ROLE_NAME"
 
 # Check if role exists
-if aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1; then
+set +e  # Temporarily disable exit on error
+aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1
+if [ $? -eq 0 ]; then
   ROLE_EXISTS=true
 else
   ROLE_EXISTS=false
 fi
+set -e  # Re-enable exit on error
 
 # Create custom policy document with specific permissions
 POLICY_DOC=$(cat <<EOF
