@@ -187,7 +187,8 @@ if [ "$ROLE_EXISTS" = true ]; then
   aws iam put-role-policy \
     --role-name "$ROLE_NAME" \
     --policy-name "$POLICY_NAME" \
-    --policy-document "$POLICY_DOC"
+    --policy-document "$POLICY_DOC" \
+    --output text
 else
   echo "✱ Creating IAM role: $ROLE_NAME"
   TRUST_DOC='{
@@ -214,7 +215,8 @@ else
   aws iam put-role-policy \
     --role-name "$ROLE_NAME" \
     --policy-name "$POLICY_NAME" \
-    --policy-document "$POLICY_DOC"
+    --policy-document "$POLICY_DOC" \
+    --output text
 
   echo "Waiting for IAM role to propagate..."
   sleep 10
