@@ -185,10 +185,11 @@ else
     }]
   }'
 
-  ROLE_ARN=$(aws iam create-role \
+  aws iam create-role \
     --role-name "$ROLE_NAME" \
-    --assume-role-policy-document "$TRUST_DOC" \
-    --query 'Role.Arn' --output text)
+    --assume-role-policy-document "$TRUST_DOC"
+  
+  ROLE_ARN=$(aws iam get-role --role-name "$ROLE_NAME" --query 'Role.Arn' --output text)
 
   echo "Attaching custom policy..."
   aws iam put-role-policy \
