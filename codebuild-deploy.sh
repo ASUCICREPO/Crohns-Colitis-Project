@@ -201,9 +201,14 @@ else
 
   aws iam create-role \
     --role-name "$ROLE_NAME" \
-    --assume-role-policy-document "$TRUST_DOC"
+    --assume-role-policy-document "$TRUST_DOC" || {
+    echo "Role already exists, continuing..."
+    ROLE_ARN=$(aws iam get-role --role-name "$ROLE_NAME" --query 'Role.Arn' --output text)
+  }
   
-  ROLE_ARN=$(aws iam get-role --role-name "$ROLE_NAME" --query 'Role.Arn' --output text)
+  if [ -z "${ROLE_ARN:-}" ]; then
+    ROLE_ARN=$(aws iam get-role --role-name "$ROLE_NAME" --query 'Role.Arn' --output text)
+  fi
 
   echo "Attaching custom policy..."
   aws iam put-role-policy \
