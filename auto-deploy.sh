@@ -20,15 +20,6 @@ if [ "$ACTION" = "deploy" ]; then
     AWS_REGION=${AWS_REGION:-us-west-2}
 fi
 
-# Install Node.js 18
-curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-sudo yum install -y nodejs
-
-# Install CDK, Amplify CLI and jq
-npm install -g aws-cdk@2.161.1
-npm install -g @aws-amplify/cli
-sudo yum install -y jq
-
 if [ "$ACTION" = "destroy" ]; then
     echo "🗑️ Destroying Infrastructure..."
     cd Backend
