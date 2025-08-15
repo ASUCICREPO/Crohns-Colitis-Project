@@ -2,9 +2,10 @@
 const CONFIG = {
   api: {
     baseEndpoint: process.env.REACT_APP_API_ENDPOINT ? process.env.REACT_APP_API_ENDPOINT.trim() : undefined,
-    endpoint: process.env.REACT_APP_CHAT_ENDPOINT ? process.env.REACT_APP_CHAT_ENDPOINT.trim() : undefined,
+    endpoint: process.env.REACT_APP_CHAT_ENDPOINT ? process.env.REACT_APP_CHAT_ENDPOINT.trim() : process.env.REACT_APP_API_ENDPOINT + '/chat',
     emailEndpoint: process.env.REACT_APP_EMAIL_ENDPOINT ? process.env.REACT_APP_EMAIL_ENDPOINT.trim() : undefined,
     conversationEndpoint: process.env.REACT_APP_CONVERSATION_ENDPOINT ? process.env.REACT_APP_CONVERSATION_ENDPOINT.trim() : undefined,
+    translateEndpoint: process.env.REACT_APP_TRANSLATE_ENDPOINT ? process.env.REACT_APP_TRANSLATE_ENDPOINT.trim() : undefined,
     region: process.env.REACT_APP_REGION ? process.env.REACT_APP_REGION.trim() : undefined,
     applicationId: process.env.REACT_APP_APPLICATION_ID ? process.env.REACT_APP_APPLICATION_ID.trim() : undefined
   },        
@@ -32,6 +33,8 @@ const CONFIG = {
     }
   },
   translation: {
+    provider: process.env.REACT_APP_TRANSLATION_PROVIDER || 'amazon', // 'amazon' or 'google'
+    googleApiKey: process.env.REACT_APP_GOOGLE_TRANSLATE_API_KEY,
     defaultLanguage: process.env.REACT_APP_DEFAULT_LANGUAGE || 'EN'
   },
   supportedLanguages: ['EN', 'ES'],

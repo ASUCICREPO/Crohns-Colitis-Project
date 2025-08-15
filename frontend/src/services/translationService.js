@@ -3,37 +3,77 @@ import CONFIG from '../config';
 class TranslationService {
   static async translate(text, targetLanguage) {
     try {
-      if (!CONFIG.translation.enabled || !CONFIG.translation.apiKey) {
-        console.warn('Translation is disabled or API key is missing');
+      if (!text || text.trim() === '') {
         return text;
       }
 
-      const apiKey = CONFIG.translation.apiKey;
-      const endpoint = 'https://translation.googleapis.com/language/translate/v2';
-
-      const response = await fetch(`${endpoint}?key=${apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          q: text,
-          target: targetLanguage.toLowerCase() === 'es' ? 'es' : 'en',
-          format: 'text'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Translation API error: ${response.status}`);
+      // Skip translation in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Translation skipped in development mode');
+        return text;
       }
 
-      const data = await response.json();
-      return data.data.translations[0].translatedText;
+      const provider = CONFIG.translation?.provider || 'amazon';
+      
+      switch (provider.toLowerCase()) {
+        case 'google':
+          return await this.translateWithGoogle(text, targetLanguage);
+        case 'amazon':
+        default:
+          return await this.translateWithAmazon(text, targetLanguage);
+      }
     } catch (error) {
       console.error('Translation error:', error);
-      // Return original text if translation fails
       return text;
     }
+  }
+
+  static async translateWithAmazon(text, targetLanguage) {
+    const response = await fetch(`${CONFIG.api.baseEndpoint}/translate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: text,
+        sourceLanguage: 'en',
+        targetLanguage: targetLanguage.toLowerCase() === 'es' ? 'es' : 'en'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Amazon Translate API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.translatedText || text;
+  }
+
+  static async translateWithGoogle(text, targetLanguage) {
+    const apiKey = CONFIG.translation?.googleApiKey;
+    if (!apiKey) {
+      throw new Error('Google Translate API key not configured');
+    }
+
+    const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: text,
+        source: 'en',
+        target: targetLanguage.toLowerCase() === 'es' ? 'es' : 'en',
+        format: 'text'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Google Translate API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.data?.translations?.[0]?.translatedText || text;
   }
 
   // Helper method to determine if text needs translation

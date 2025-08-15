@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources - Crohns-Colitis</title>
+    <link rel="stylesheet" href="/static/css/bundle.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .header { background: #004D77; color: white; padding: 20px; margin: -20px -20px 20px -20px; }
+        .nav { margin: 20px 0; }
+        .nav a { margin-right: 20px; color: #004D77; text-decoration: none; font-weight: bold; }
+        .nav a:hover { text-decoration: underline; }
+        .content { line-height: 1.6; }
+        .resource-card { background: #fff3e0; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #ff9800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Resources</h1>
+            <p>Tools and Information for People with IBD</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="treatment.html">Services</a>
+            <a href="support.html">Resources</a>
+        </div>
+        
+        <div class="content">
+            <h2>Helpful Resources</h2>
+            <p>Find information, tools, and support to help you understand and manage your IBD condition.</p>
+            
+            <div class="resource-card">
+                <h3>Understanding IBD</h3>
+                <p>Learn about Crohn's disease, ulcerative colitis, and other inflammatory bowel diseases.</p>
+            </div>
+            
+            <div class="resource-card">
+                <h3>Self-Management Tools</h3>
+                <p>Resources to help you manage your IBD symptoms and maintain quality of life.</p>
+            </div>
+            
+            <div class="resource-card">
+                <h3>Treatment Guides</h3>
+                <p>Download guides and resources for managing IBD treatment and care.</p>
+            </div>
+            
+            <div class="resource-card">
+                <h3>Emergency Contacts</h3>
+                <p>Important phone numbers and contacts for IBD-related emergencies and urgent situations.</p>
+            </div>
+            
+            <p><a href="index.html">Return to homepage →</a></p>
+        </div>
+    </div>
+
+    <!-- Chat Widget Integration -->
+    <div id="root"></div>
+    <script>
+        window.CHAT_CONFIG = {
+            persistAcrossPages: true,
+            sessionStorageKey: 'chatbot_session',
+            debugMode: true
+        };
+        
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('📚 Loading Crohns-Colitis chat widget on resources page...');
+        });
+    </script>
+    <script src="/static/js/bundle.js"></script>
+</body>
+</html>

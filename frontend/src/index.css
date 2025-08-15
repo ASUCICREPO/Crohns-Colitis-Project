@@ -113,29 +113,7 @@ code {
   min-height: 100%;
 }
 
-.appFixedHeight100 {
-  height: calc(100vh - 5rem);
-  /* Safari iOS viewport fix */
-  height: calc(100svh - 5rem);
-  height: calc(var(--vh, 1vh) * 100 - 5rem);
-}
 
-/* Responsive breakpoints for all browsers */
-@media screen and (max-width: 600px) {
-  .appFixedHeight100 {
-    height: calc(100vh - 4rem);
-    height: calc(100svh - 4rem);
-    height: calc(var(--vh, 1vh) * 100 - 4rem);
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .appFixedHeight100 {
-    height: calc(100vh - 3rem);
-    height: calc(100svh - 3rem);
-    height: calc(var(--vh, 1vh) * 100 - 3rem);
-  }
-}
 
 .appHeightInherit {
   height: inherit;
@@ -183,9 +161,7 @@ code {
 .appTextUpperCase {
   text-transform: uppercase;
 }
-li {
-   color : white;
-}
+
 /* Text Align Classes */
 /* Cross-browser message styling */
 .MuiGrid-root.MuiGrid-item.userMessage {
@@ -198,6 +174,7 @@ li {
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+  font-size: 0.875rem;
 }
 
 .MuiGrid-root.MuiGrid-item.botMessage {
@@ -210,6 +187,7 @@ li {
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+  font-size: 0.875rem;
 }
 
 /* Mobile responsive for all browsers */
@@ -238,7 +216,7 @@ li {
   border-radius: 40px;
 }
 .MuiGrid-root.MuiGrid-container.MuiGrid-item.sendMessageContainer{
-  background:#dbf6ff;
+  background:#dbe3f9;
 }
 
 .MuiButton-root.attachmentButton {
@@ -257,14 +235,7 @@ li {
 p#USERCHATINPUT-helper-text {
   padding-bottom: 12px;
 }
-.MuiTypography-h4.chatHeaderText {
-  text-align: start;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-style: normal;
-  font-weight: 600;
-}
+
 /* Base styles for .chatScrollContainer */
 /* Cross-browser chat container */
 .chatScrollContainer {
@@ -335,11 +306,7 @@ p#USERCHATINPUT-helper-text {
   background-color: red;
   color: white;
 }
-@media (max-width: 600px) {
-  .MuiTypography-h4.chatHeaderText {
-    font-size: 1.5rem;
-  }
-}
+
 
 /* Typing indicator animation */
 @keyframes blink {

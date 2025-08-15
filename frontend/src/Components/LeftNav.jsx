@@ -1,89 +1,117 @@
-import React, { useEffect } from "react";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import { useLanguage } from "../utilities/LanguageContext"; // Adjust the import path
-import { ABOUT_US_HEADER_BACKGROUND, ABOUT_US_TEXT, FAQ_HEADER_BACKGROUND, FAQ_TEXT, TEXT } from "../utilities/constants"; // Adjust the import path
-import closeIcon from "../Assets/close.svg"; // Assuming close.svg is an image
-import arrowRightIcon from "../Assets/arrow_right.svg"; // Assuming arrow_right.svg is an image
-import Box from "@mui/material/Box";
+"use client"
 
-function LeftNav({ showLeftNav = true, setLeftNav }) {
-  const { currentLanguage } = useLanguage();
+import { Box, Typography, List, ListItem, ListItemText, useMediaQuery, IconButton } from "@mui/material"
+import { TEXT, ABOUT_US_TEXT, FAQ_TEXT, PRIMARY_MAIN } from "../utilities/constants"
+// Material-UI icons
+import ChevronRightIcon from "@mui/icons-material/ChevronRight"
+import CloseIcon from "@mui/icons-material/Close"
 
-  useEffect(() => {
-    // Dispatch event when left nav state changes
-    const event = new CustomEvent('leftNavChange', { detail: showLeftNav });
-    window.dispatchEvent(event);
-  }, [showLeftNav]);
+function LeftNav({ showLeftNav, setLeftNav }) {
+  const isSmallScreen = useMediaQuery("(max-width:600px)")
 
   return (
-    <Grid className="appHeight100">
-      <Grid container direction="column" justifyContent="space-between" alignItems="stretch" padding={4} spacing={2} sx={{ height: '100%' }}>
-        {showLeftNav ? (
-          <>
-            <Grid item>
-              <Grid container direction="column" spacing={2}>
-                <Grid item container direction="column" justifyContent="flex-start" alignItems="flex-end">
-                  <img
-                    src={closeIcon}
-                    alt="Close Panel"
-                    onClick={() => setLeftNav(false)}
-                  />
-                </Grid>
-                <Grid item>
-                  <Typography variant="h6" sx={{fontWeight:"bold"}} color={ABOUT_US_HEADER_BACKGROUND}>{TEXT[currentLanguage].ABOUT_US_TITLE}</Typography>
-                </Grid>
-                <Grid item>
-                  <Typography variant="subtitle1" color={ABOUT_US_TEXT}>{TEXT[currentLanguage].ABOUT_US}</Typography>
-                </Grid>
-                <Grid item>
-                  <Typography variant="h6" sx={{fontWeight:"bold"}} color={FAQ_HEADER_BACKGROUND}>{TEXT[currentLanguage].FAQ_TITLE}</Typography>
-                </Grid>
-                <Grid item>
-                  <ul>
-                    {TEXT[currentLanguage].FAQS.map((question, index) => (
-                      <li key={index}>
-                        <Typography variant="subtitle1" color={FAQ_TEXT}>{question}</Typography>
-                      </li>
-                    ))}
-                  </ul>
-                </Grid>
-              </Grid>
-            </Grid>
+    <Box
+      sx={{
+        height: "100%",
+        color: ABOUT_US_TEXT,
+        padding: "2rem 1rem",
+        position: "relative",
+        overflow: "auto",
+      }}
+    >
+      {/* Toggle button with conditional icon - only show on non-small screens */}
+      {!isSmallScreen && (
+        <IconButton
+          sx={{
+            position: "absolute",
+            right: "5px",
+            top: "10px",
+            backgroundColor: PRIMARY_MAIN,
+            color: ABOUT_US_TEXT,
+            padding: "5px",
+            "&:hover": {
+              backgroundColor: "#2a1659",
+            },
+          }}
+          onClick={() => setLeftNav(!showLeftNav)}
+        >
+          {showLeftNav ? <CloseIcon /> : <ChevronRightIcon />}
+        </IconButton>
+      )}
 
-            {/* Simplify Toggle Explanation - Now at the bottom
-            <Grid item sx={{ mt: 'auto' }}>
-              <Box sx={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-                padding: 2, 
-                borderRadius: 1,
-                mt: 2 
-              }}>
-                <Typography variant="subtitle1" sx={{fontWeight:"bold"}} color={ABOUT_US_HEADER_BACKGROUND}>
-                  {currentLanguage === 'ES' ? 'Modo Simplificado' : 'Simplify Mode'}
-                </Typography>
-                <Typography variant="body2" color={ABOUT_US_TEXT} sx={{ mt: 1 }}>
-                  {currentLanguage === 'ES' 
-                    ? 'Cuando está activado, el asistente proporciona respuestas más claras y fáciles de seguir para usuarios que desean explicaciones simples y directas.'
-                    : 'When turned on, the assistant gives clearer, easier-to-follow answers for users who want simple, straightforward explanations.'}
-                </Typography>
-              </Box>
-            </Grid> */}
-          </>
-        ) : (
-          <>
-            <Grid item container direction="column" justifyContent="flex-start" alignItems="flex-end">
-              <img
-                src={arrowRightIcon}
-                alt="Open Panel"
-                onClick={() => setLeftNav(true)}
-              />
-            </Grid>
-          </>
-        )}
-      </Grid>
-    </Grid>
-  );
+      {/* Close button for small screens */}
+      {isSmallScreen && (
+        <IconButton
+          sx={{
+            position: "absolute",
+            right: "5px",
+            top: "10px",
+            backgroundColor: PRIMARY_MAIN,
+            color: ABOUT_US_TEXT,
+            padding: "5px",
+            "&:hover": {
+              backgroundColor: "#2a1659",
+            },
+          }}
+          onClick={() => setLeftNav(false)}
+        >
+          <CloseIcon />
+        </IconButton>
+      )}
+
+      {/* About Us Section */}
+      {(showLeftNav || isSmallScreen) && (
+        <>
+          <Typography
+            variant="h6"
+            sx={{
+              color: ABOUT_US_TEXT,
+              fontWeight: "bold",
+              marginBottom: "1rem",
+            }}
+          >
+            {TEXT.ABOUT_US_TITLE}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: ABOUT_US_TEXT,
+              marginBottom: "2rem",
+            }}
+          >
+            {TEXT.ABOUT_US}
+          </Typography>
+
+          {/* FAQs Section */}
+          <Typography
+            variant="h6"
+            sx={{
+              color: FAQ_TEXT,
+              fontWeight: "bold",
+              marginBottom: "1rem",
+            }}
+          >
+            {TEXT.FAQ_TITLE}
+          </Typography>
+          <List>
+            {TEXT.FAQS.map((faq, index) => (
+              <ListItem key={index} sx={{ padding: "0.25rem 0" }}>
+                <ListItemText
+                  primary={faq}
+                  sx={{
+                    color: FAQ_TEXT,
+                    "& .MuiListItemText-primary": {
+                      fontSize: "0.9rem",
+                    },
+                  }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </>
+      )}
+    </Box>
+  )
 }
 
-export default LeftNav;
+export default LeftNav

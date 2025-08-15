@@ -1,27 +1,44 @@
-import React from "react";
-import Typography from "@mui/material/Typography";
-import { useLanguage } from "../utilities/LanguageContext"; // Adjust the import path
-import { TEXT, HEADER_TEXT_GRADIENT } from "../utilities/constants"; // Adjust the import path
-import { Container } from "@mui/material";
+import Typography from "@mui/material/Typography"
+import { TEXT, HEADER_TEXT_GRADIENT } from "../utilities/constants"
+import { Box, Container, useMediaQuery } from "@mui/material"
 
-function ChatHeader({ selectedLanguage }) {
-  const { currentLanguage } = useLanguage();
-  const language = selectedLanguage || currentLanguage || 'EN'; // Use selectedLanguage if provided, otherwise default to currentLanguage or 'EN'
+function ChatHeader() {
+  const isSmallScreen = useMediaQuery("(max-width:600px)")
 
   return (
     <Container
       sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "auto",
+        padding: "0 !important",
+        marginTop: "0.5rem",
+        marginBottom: isSmallScreen ? "1rem" : "1.5rem",
       }}
     >
-      <Typography variant="h4" className="chatHeaderText" sx={{ background: HEADER_TEXT_GRADIENT, textAlign: 'center' }}>
-        {TEXT[language]?.CHAT_HEADER_TITLE || "Default Chat Header Title"} {/* Safe fallback */}
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: isSmallScreen ? 1 : 2,
+        }}
+      >
+        <Typography
+          variant={isSmallScreen ? "h5" : "h4"}
+          className="chatHeaderText"
+          sx={{
+            color: HEADER_TEXT_GRADIENT,
+            fontWeight: "bold",
+            fontSize: isSmallScreen ? "1.25rem" : "2rem",
+            textAlign: "center",
+          }}
+        >
+          {TEXT.CHAT_HEADER_TITLE}
+        </Typography>
+      </Box>
     </Container>
-  );
+  )
 }
 
-export default ChatHeader;
+export default ChatHeader

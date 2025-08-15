@@ -1,5 +1,5 @@
 import DisabilityRightsService from './disabilityRightsService';
-import { DISABILITY_RIGHTS_VISION } from '../utilities/constants';
+import { DISABILITY_RIGHTS_VISION } from '../utils/constants';
 
 describe('DisabilityRightsService', () => {
   describe('getMessage', () => {

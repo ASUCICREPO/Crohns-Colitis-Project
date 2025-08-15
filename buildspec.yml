@@ -1,0 +1,93 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+      python: 3.11
+    commands:
+      - echo "Installing dependencies..."
+      - npm install -g aws-cdk@2.161.1
+      - npm install -g @aws-amplify/cli
+      
+  pre_build:
+    commands:
+      - echo "Pre-build phase started on `date`"
+      - cd backend
+      - npm install
+      - npm run build
+      
+  build:
+    commands:
+      - echo "Build phase started on `date`"
+      
+      # Deploy backend CDK stack
+      - echo "Deploying backend infrastructure..."
+      - cdk deploy --require-approval never --outputs-file ../outputs.json
+      
+      # Extract API endpoints from CDK outputs
+      - echo "Extracting API endpoints..."
+      - cd ..
+      - export CHAT_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ChatEndpoint')
+      - export EMAIL_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.EmailEndpoint')
+      - export CONVERSATION_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ConversationEndpoint')
+      - export TRANSLATE_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.TranslateEndpoint')
+      - export QBUSINESS_APP_ID=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.QBusinessApplicationId')
+      
+      # Configure frontend environment
+      - echo "Configuring frontend with API endpoints..."
+      - cd widget
+      - |
+        cat > .env.production << EOF
+        VITE_CHAT_API_URL=$CHAT_API_URL
+        VITE_EMAIL_API_URL=$EMAIL_API_URL
+        VITE_CONVERSATION_API_URL=$CONVERSATION_API_URL
+        VITE_TRANSLATE_API_URL=$TRANSLATE_API_URL
+        VITE_QBUSINESS_APPLICATION_ID=$QBUSINESS_APP_ID
+        VITE_AWS_REGION=us-west-2
+        EOF
+      
+      # Install frontend dependencies and build
+      - echo "Building frontend..."
+      - npm install
+      - npm run build
+      
+  post_build:
+    commands:
+      - echo "Post-build phase started on `date`"
+      
+      # Deploy to S3 for static hosting (simpler than Amplify)
+      - echo "Deploying frontend to S3..."
+      - |
+        BUCKET_NAME="crohns-colitis-frontend-$(date +%s)"
+        aws s3 mb s3://$BUCKET_NAME
+        aws s3 sync widget/build/ s3://$BUCKET_NAME --delete
+        aws s3 website s3://$BUCKET_NAME --index-document index.html --error-document index.html
+        
+        # Make bucket public for static website
+        aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy "{
+          \"Version\": \"2012-10-17\",
+          \"Statement\": [{
+            \"Sid\": \"PublicReadGetObject\",
+            \"Effect\": \"Allow\",
+            \"Principal\": \"*\",
+            \"Action\": \"s3:GetObject\",
+            \"Resource\": \"arn:aws:s3:::$BUCKET_NAME/*\"
+          }]
+        }"
+        
+        WEBSITE_URL="http://$BUCKET_NAME.s3-website-us-west-2.amazonaws.com"
+        echo "Frontend deployed at: $WEBSITE_URL"
+        echo "WEBSITE_URL=$WEBSITE_URL" >> ../deployment-info.txt
+
+artifacts:
+  files:
+    - outputs.json
+    - deployment-info.txt
+    - frontend/build/**/*
+  name: crohns-colitis-deployment
+
+cache:
+  paths:
+    - backend/node_modules/**/*
+    - frontend/node_modules/**/*

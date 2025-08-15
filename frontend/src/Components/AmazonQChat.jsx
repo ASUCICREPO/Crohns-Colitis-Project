@@ -1,17 +1,36 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Grid, Avatar, Box, CircularProgress, Typography } from "@mui/material";
-import UserAvatar from "../Assets/UserAvatar.svg";
-import createMessageBlock from "../utilities/createMessageBlock";
+import UserAvatar from "../assets/User Avatar.png";
+import BotAvatar from "../assets/Group 17.png";
+import createMessageBlock from "../utils/createMessageBlock";
 import ChatInput from "./ChatInput";
 import AmazonQService from "../services/amazonQService";
 import TranslationService from "../services/translationService";
 import CONFIG from "../config";
-import { useLanguage } from "../utilities/LanguageContext";
-import { TEXT } from "../utilities/constants";
-import Switch from "./Switch";
+import { useLanguage } from "../utils/LanguageContext";
+import { TEXT } from "../utils/constants";
+import { getTranslation } from "../utils/translations";
+
 import BotResponse from "./BotResponse";
-import { CookieUtils } from "../utilities/cookieUtils";
-import { ConversationStorage } from "../utilities/conversationStorage";
+
+// Helper function to get welcome message in any language
+const getWelcomeMessage = async (language) => {
+  return getTranslation('welcome', language);
+};
+
+// Helper function to check if this is the first welcome message
+const isWelcomeMessage = (message) => {
+  const welcomeMessages = [
+    "Hi! This is Coli. How can I help you today?",
+    "¡Hola! Soy Coli. ¿Cómo puedo ayudarte hoy?",
+    "Bonjour! Je suis Coli. Comment puis-je vous aider aujourd'hui?",
+    "您好！我是Coli。今天我可以如何帮助您？"
+  ];
+  return welcomeMessages.includes(message);
+};
+import { CookieUtils } from "../utils/cookieUtils";
+import { ConversationStorage } from "../utils/conversationStorage";
+import { SessionCleanup } from "../utils/sessionCleanup";
 import ConversationService from "../services/conversationService";
 
 // Test cookie utilities immediately
@@ -26,11 +45,13 @@ try {
 
 // Debug logging is controlled in config.js
 
-function AmazonQChat() {
+function AmazonQChat({ isExpanded = false }) {
   const [messageList, setMessageList] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [conversationId, setConversationId] = useState(null);
   const [lastSystemMessageId, setLastSystemMessageId] = useState(null);
+  const [hasShownWelcome, setHasShownWelcome] = useState(false);
+  const [isLanguageRestart, setIsLanguageRestart] = useState(false);
   const [sessionId] = useState(() => {
     console.log('🔄 DEBUG - AmazonQChat initializing sessionId...');
     const id = CookieUtils.getSessionId();
@@ -38,7 +59,7 @@ function AmazonQChat() {
     return id;
   });
   const messagesEndRef = useRef(null);
-  const { currentLanguage } = useLanguage();
+  const { currentLanguage, setCurrentLanguage } = useLanguage();
   
   // Add a function to add messages from other components
   const addMessageToList = (message) => {
@@ -48,12 +69,69 @@ function AmazonQChat() {
   // Expose the function globally
   window.addMessageToList = addMessageToList;
   
-  // Load conversation on mount
+  // Expose restart function globally
+  window.restartChatbot = async (newLanguage) => {
+    console.log('🔄 DEBUG - restartChatbot called with language:', newLanguage);
+    console.log('🔄 DEBUG - Current state before restart:', { messageListLength: messageList.length, hasShownWelcome, isLanguageRestart });
+    
+    // Set flag to prevent loading old conversation
+    setIsLanguageRestart(true);
+    
+    // Update the current language state first
+    setCurrentLanguage(newLanguage);
+    
+    // Complete conversation reset - clear everything immediately
+    console.log('🔄 DEBUG - Clearing all conversation data');
+    setMessageList([]);
+    setConversationId(null);
+    setLastSystemMessageId(null);
+    setHasShownWelcome(false);
+    setProcessing(false);
+    
+    // Clear any stored conversation data immediately
+    const sessionId = CookieUtils.getSessionId();
+    ConversationStorage.clearConversation(sessionId);
+    console.log('🔄 DEBUG - Cleared conversation storage for session:', sessionId);
+    
+    // Add fresh welcome message in new language
+    setTimeout(async () => {
+      console.log('🔄 DEBUG - Adding welcome message for language:', newLanguage);
+      const welcomeText = await getWelcomeMessage(newLanguage);
+      const welcomeMessage = {
+        ...createMessageBlock(
+          welcomeText,
+          "BOT",
+          "TEXT",
+          "RECEIVED"
+        )
+      };
+      
+      console.log('🔄 DEBUG - Setting fresh messageList with welcome message');
+      setMessageList([welcomeMessage]);
+      setHasShownWelcome(true);
+      setIsLanguageRestart(false);
+      console.log('🔄 DEBUG - Language restart completed');
+    }, 100);
+  };
+  
+  // Load conversation on mount and setup cleanup handlers
   useEffect(() => {
-    console.log('🔄 DEBUG - Loading conversation on mount for sessionId:', sessionId);
+    console.log('🔄 DEBUG - useEffect triggered with:', { sessionId, hasShownWelcome, isLanguageRestart, messageListLength: messageList.length });
     
     const loadConversation = async () => {
       console.log('🔄 DEBUG - Starting conversation load process...');
+      
+      // Skip loading if this is a language restart
+      if (isLanguageRestart) {
+        console.log('🔄 DEBUG - Skipping conversation load - language restart in progress');
+        return;
+      }
+      
+      // Skip if we already have messages (from language restart)
+      if (messageList.length > 0) {
+        console.log('🔄 DEBUG - Skipping conversation load - messages already exist');
+        return;
+      }
       
       // Try localStorage first
       let savedConversation = ConversationStorage.loadConversation(sessionId);
@@ -111,7 +189,29 @@ function AmazonQChat() {
     };
     
     loadConversation();
-  }, [sessionId]);
+    
+    // Add welcome message with language selection if no existing conversation and not during language restart
+    if (!hasShownWelcome && !isLanguageRestart) {
+      setTimeout(async () => {
+        const welcomeText = await getWelcomeMessage(currentLanguage);
+        const welcomeMessage = {
+          ...createMessageBlock(
+            welcomeText,
+            "BOT",
+            "TEXT",
+            "RECEIVED"
+          )
+        };
+        setMessageList(prevList => {
+          if (prevList.length === 0) {
+            setHasShownWelcome(true);
+            return [welcomeMessage];
+          }
+          return prevList;
+        });
+      }, 500);
+    }
+  }, [sessionId, hasShownWelcome, isLanguageRestart]);
 
   // Save conversation when it changes
   useEffect(() => {
@@ -127,25 +227,17 @@ function AmazonQChat() {
     }
   }, [sessionId, messageList, conversationId, lastSystemMessageId]);
 
-  // Reset conversation when language changes to ensure consistent language in responses
-  useEffect(() => {
-    // Only reset if there's an existing conversation
-    if (conversationId) {
-      console.log('Language changed, resetting conversation');
-      setConversationId(null);
-      setLastSystemMessageId(null);
-      ConversationStorage.clearConversation(sessionId);
-    }
-  }, [currentLanguage, conversationId, sessionId]);
+
 
   useEffect(() => {
     scrollToBottom();
     // Log conversation state on mount and updates
-    console.log('AmazonQChat state:', { 
+    console.log('🔄 DEBUG - AmazonQChat state updated:', { 
       conversationId, 
       lastSystemMessageId,
       messageCount: messageList.length,
-      currentLanguage: currentLanguage
+      currentLanguage: currentLanguage,
+      messages: messageList.map(m => ({ sentBy: m.sentBy, message: m.message.substring(0, 50) + '...' }))
     });
   }, [messageList, conversationId, lastSystemMessageId, currentLanguage]);
 
@@ -159,18 +251,51 @@ function AmazonQChat() {
     console.log(`Sending message in ${currentLanguage}:`, inputText);
     setProcessing(true);
     
+    // Check if this is a language selection
+    const isLanguageSelection = inputText.toLowerCase().match(/^(english|spanish|español|1|2)$/);
+    
     // Add user message to UI
     const userMessageBlock = createMessageBlock(inputText, "USER", "TEXT", "SENT");
     setMessageList(prevList => [...prevList, userMessageBlock]);
     
-    try {
-      // Modify input text for Spanish language
-      const modifiedInput = currentLanguage === 'EN' ?  inputText : `${inputText} in spanish`;
-      console.log("Current Language", currentLanguage);
-      console.log("Modified Input ",modifiedInput);
+    // Handle language selection
+    if (isLanguageSelection && messageList.length <= 1) {
+      const selectedLang = inputText.toLowerCase();
+      let newLanguage = currentLanguage;
+      let responseMessage = "";
       
-      // Call Amazon Q Business API
-      const data = await AmazonQService.sendMessage(modifiedInput, currentLanguage, conversationId, lastSystemMessageId, sessionId);
+      // This logic is no longer needed as language is selected via dropdown
+      return;
+      
+      // Set language if different
+      if (newLanguage !== currentLanguage) {
+        setCurrentLanguage(newLanguage);
+      }
+      
+      // Add bot response
+      const botResponse = createMessageBlock(responseMessage, "BOT", "TEXT", "RECEIVED");
+      setMessageList(prevList => [...prevList, botResponse]);
+      setProcessing(false);
+      return;
+    }
+    
+    try {
+      console.log("Current Language", currentLanguage);
+      console.log("Original Input Text:", inputText);
+      
+      // Translate user input to English if needed
+      let englishInput = inputText;
+      if (currentLanguage !== 'en') {
+        try {
+          englishInput = await TranslationService.translate(inputText, 'en');
+          console.log("Translated Input to English:", englishInput);
+        } catch (error) {
+          console.error('Input translation failed:', error);
+        }
+      }
+      
+      // Call Amazon Q Business API (always in English)
+      const data = await AmazonQService.sendMessage(englishInput, 'EN', conversationId, lastSystemMessageId, sessionId);
       
       // Log the raw API response
       console.log('Raw API Response in handleSendMessage:', JSON.stringify(data, null, 2));
@@ -219,18 +344,16 @@ function AmazonQChat() {
       // If low confidence, show the standard message
       if (containsLowConfidenceText || isLowConfidenceScore || isNoResponseReceived || isSystemMessageNone) {
         console.log('🔍 DEBUG - Triggering low confidence response');
-        messageToDisplay = "I'm not confident in this answer. Would you like to share your email for a follow-up?";
+        messageToDisplay = getTranslation('lowConfidenceMessage', 'en'); // Start with English, will be translated below
         // Remove sources for low confidence responses
         data.sourceAttributions = [];
       }
       
-      // Check if translation is needed and translate
-      if (TranslationService.needsTranslation(messageToDisplay, currentLanguage)) {
+      // Translate response to user's language if needed
+      if (currentLanguage !== 'en') {
         console.log(`Translating response to ${currentLanguage}`);
         try {
           messageToDisplay = await TranslationService.translate(messageToDisplay, currentLanguage);
-          // Add translation indicator
-          messageToDisplay = `${messageToDisplay}\n\n[${currentLanguage === 'ES' ? 'Traducción automática' : 'Automatic translation'}]`;
         } catch (error) {
           console.error('Translation failed:', error);
         }
@@ -292,7 +415,7 @@ function AmazonQChat() {
     } catch (error) {
       console.error("Error in chat interaction:", error);
       const errorMessage = createMessageBlock(
-        CONFIG.ui.errorMessage[currentLanguage],
+        getTranslation('errorMessage', currentLanguage),
         "BOT",
         "TEXT",
         "RECEIVED"
@@ -305,23 +428,19 @@ function AmazonQChat() {
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="space-between" className="appHeight100 appWidth100">
-      <Box display="flex" justifyContent="space-between" alignItems="center" p={2} borderBottom="1px solid #e0e0e0">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Switch />
-        </div>
-      </Box>
+
       
       <Box flex={1} overflow="auto" className="chatScrollContainer">
         {messageList.length === 0 ? (
           <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-            <div>{CONFIG.ui.emptyStateMessage[currentLanguage]}</div>
+            <div>{getTranslation('emptyStateMessage', currentLanguage)}</div>
           </Box>
         ) : (
           (() => { console.log('Rendering messageList:', messageList); return null; })(),
           messageList.map((msg, index) => {
             console.log('Rendering msg:', msg);
             return (
-              <Box key={index} mb={2}>
+              <Box key={index} mb={2} mt={index === 0 ? 2 : 0}>
                 {msg.sentBy === "USER" ? (
                   <UserMessage message={msg.message} />
                 ) : (
@@ -343,6 +462,11 @@ function AmazonQChat() {
                         confidenceScore={msg.confidenceScore || 50}
                         originalQuestion={msg.originalQuestion || ''}
                         chatHistory={chatHistoryForThisMessage}
+                        showLanguageButtons={msg.showLanguageButtons}
+                        onLanguageSelect={handleSendMessage}
+                        showExampleQuestions={isWelcomeMessage(msg.message) && messageList.length === 1}
+                        onExampleQuestionClick={handleSendMessage}
+                        isExpanded={isExpanded}
                       />
                     );
                   })()
@@ -351,20 +475,48 @@ function AmazonQChat() {
             );
           })
         )}
+        {processing && (
+          <Box mb={2}>
+            <Grid container direction="row" justifyContent="flex-start" alignItems="flex-end">
+              <Grid item>
+                <Avatar src={BotAvatar} sx={{ width: 40, height: 40 }} />
+              </Grid>
+              <Grid item className="botMessage" sx={{ backgroundColor: (theme) => theme.palette.background.botMessage, ml: 1 }}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CircularProgress size={16} />
+                  <Typography variant="body2">{getTranslation('loading', currentLanguage)}</Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        )}
         <div ref={messagesEndRef} />
       </Box>
       
-      <Box sx={{ width: "100%" }}>
-        {processing && (
-          <Box display="flex" justifyContent="center" my={1}>
-            <CircularProgress size={24} />
-          </Box>
-        )}
+      <Box sx={{ px: 2, pb: 2 }}>
         <ChatInput 
           onSendMessage={handleSendMessage} 
           processing={processing} 
-          placeholder={TEXT[currentLanguage].CHAT_INPUT_PLACEHOLDER}
+          placeholder={getTranslation('chatInputPlaceholder', currentLanguage)}
         />
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            display: 'block',
+            textAlign: 'center',
+            color: '#666',
+            fontSize: '0.7rem',
+            mt: 1,
+            lineHeight: 1.2,
+            px: 1,
+            // Responsive text layout
+            '@media (max-width: 500px)': {
+              fontSize: '0.65rem'
+            }
+          }}
+        >
+          {getTranslation('disclaimer', currentLanguage)}
+        </Typography>
       </Box>
     </Box>
   );

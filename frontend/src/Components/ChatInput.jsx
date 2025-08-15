@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { TextField, Grid, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import { useLanguage } from "../utilities/LanguageContext";
-import { TEXT } from "../utilities/constants";
-import { useTranscript } from "../utilities/TranscriptContext";
+import { useLanguage } from "../utils/LanguageContext";
+import { getTranslation } from "../utils/translations";
+import { useTranscript } from "../utils/TranscriptContext";
 
 function ChatInput({ onSendMessage, processing }) {
   const [message, setMessage] = useState("");
@@ -30,7 +30,7 @@ function ChatInput({ onSendMessage, processing }) {
       onSendMessage(message);
       setMessage("");
     } else {
-      setHelperText(TEXT[currentLanguage].HELPER_TEXT);
+      setHelperText(getTranslation('helperText', currentLanguage));
     }
   };
 
@@ -48,10 +48,10 @@ function ChatInput({ onSendMessage, processing }) {
       <Grid item xs={10} sm={11} md={11.5}>
         <TextField
           multiline
-          maxRows={4}
+          maxRows={2}
           fullWidth
           disabled={isListening}
-          placeholder={TEXT[currentLanguage].CHAT_INPUT_PLACEHOLDER}
+          placeholder={getTranslation('chatInputPlaceholder', currentLanguage)}
           id="USERCHATINPUT"
           value={getMessage(message, transcript, isListening)}
           onKeyDown={(e) => {
@@ -61,8 +61,19 @@ function ChatInput({ onSendMessage, processing }) {
             }
           }}
           onChange={handleTyping}
-          helperText={isListening ? TEXT[currentLanguage].SPEECH_RECOGNITION_HELPER_TEXT : helperText}
-          sx={{ "& fieldset": { border: "none" } }}
+          helperText={isListening ? getTranslation('speechRecognitionHelperText', currentLanguage) : helperText}
+          sx={{ 
+            "& fieldset": { border: "none" },
+            "& .MuiInputBase-root": {
+              minHeight: "40px",
+              padding: "8px 12px"
+            },
+            "& .MuiInputBase-input": {
+              padding: "0",
+              lineHeight: "1.2",
+              fontSize: "0.875rem"
+            }
+          }}
         />
       </Grid>
       <Grid item xs={2} sm={1} md={0.5}>

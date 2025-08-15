@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { LanguageProvider } from '../utilities/LanguageContext';
-import { TranscriptProvider } from '../utilities/TranscriptContext';
+import { LanguageProvider } from '../utils/LanguageContext';
+import { TranscriptProvider } from '../utils/TranscriptContext';
 import FloatingChatWidget from './FloatingChatWidget';
 import theme from '../theme';
 

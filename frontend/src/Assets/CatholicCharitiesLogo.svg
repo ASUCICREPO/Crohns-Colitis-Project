@@ -1,0 +1,16 @@
+<svg width="300" height="80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background color -->
+  <rect width="100%" height="100%" fill="#444E56" />
+  
+  <!-- Subtle dotted pattern -->
+  <defs>
+    <pattern id="pattern1" patternUnits="userSpaceOnUse" width="10" height="10">
+      <circle cx="5" cy="5" r="2" fill="#555b62" />
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#pattern1)" />
+  
+  <!-- Text with primary main color -->
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#E7B00C" stroke="#D3D3D3" stroke-width="1">Chatbot Header</text>
+
+</svg>

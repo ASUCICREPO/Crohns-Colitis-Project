@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Avatar, Typography, Box, Link, Button } from "@mui/material";
-import BotAvatar from "../Assets/BotAvatar.png";
-import { ALLOW_MARKDOWN_BOT, TEXT } from "../utilities/constants";
+import BotAvatar from "../assets/Group 17.png";
+import { ALLOW_MARKDOWN_BOT, TEXT } from "../utils/constants";
 import ReactMarkdown from "react-markdown";
 import EmailCollectionModal from "./EmailCollectionModal";
-import { useLanguage } from "../utilities/LanguageContext";
-import createMessageBlock from "../utilities/createMessageBlock";
+import { useLanguage } from "../utils/LanguageContext";
+import createMessageBlock from "../utils/createMessageBlock";
+import { getTranslation } from "../utils/translations";
+import { FOLLOWUP_BUTTON_BACKGROUND } from "../utils/constants";
 
-const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceScore = 100, originalQuestion = "", conversationId = "", chatHistory = [] }) => {
+const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceScore = 100, originalQuestion = "", conversationId = "", chatHistory = [], showLanguageButtons = false, onLanguageSelect, showExampleQuestions = false, onExampleQuestionClick, isExpanded = false }) => {
   const [showEmailModal, setShowEmailModal] = useState(false);
   const { currentLanguage } = useLanguage();
+  const langCode = currentLanguage.toUpperCase();
   // Ensure message is a string
   const safeMessage = message || "";
   
@@ -27,14 +30,8 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
     });
   }
   
-  // For low confidence messages, show a clean message without the follow-up text
+  // For low confidence messages, show the original message
   let processedMessage = safeMessage;
-  if (isLowConfidenceMessage) {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔍 DEBUG - Processing low confidence message');
-    }
-    processedMessage = safeMessage.replace("I'm not confident in this answer. Would you like to share your email for a follow-up?", "I'm not confident in this answer.").trim();
-  }
   
   // Handle line breaks
   const formattedMessage = processedMessage.replace(/\n/g, '<br>');
@@ -100,13 +97,13 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
     testApiEndpoint();
   }, []);
   
-  const handleEmailSubmit = async (email, question, conversationId, chatHistory) => {
+  const handleEmailSubmit = async (userInfo, question, conversationId, chatHistory) => {
     try {
       // DEBUG: Log chat history details
       console.log('🔍 DEBUG - Chat History Details:', {
         chatHistoryLength: chatHistory?.length || 0,
         chatHistory: chatHistory,
-        email,
+        userInfo,
         question,
         conversationId
       });
@@ -125,15 +122,19 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
         
         // Validate email format before sending
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!emailRegex.test(userInfo.email)) {
           throw new Error('Invalid email format');
         }
         
         const requestBody = {
-          email,
+          email: userInfo.email,
+          firstName: userInfo.firstName,
+          lastName: userInfo.lastName,
+          phone: userInfo.phone,
           question,
           conversationId,
-          chatHistory
+          chatHistory,
+          ccEmail: userInfo.email
         };
         
         console.log('🔍 DEBUG - Request body:', requestBody);
@@ -214,7 +215,7 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
       
       // Create a success message directly
       const successMessage = createMessageBlock(
-        TEXT[currentLanguage].EMAIL_SUCCESS_MESSAGE,
+        getTranslation('emailSuccessMessage', currentLanguage),
         'BOT',
         'TEXT',
         'RECEIVED',
@@ -233,7 +234,7 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
         window.addMessageToList(successMessage);
       } else {
         // Fallback - just show an alert
-        alert(TEXT[currentLanguage].EMAIL_SUCCESS_MESSAGE);
+        alert(getTranslation('emailSuccessMessage', currentLanguage));
       }
     } catch (error) {
       console.error('Error submitting email request:', error);
@@ -313,6 +314,34 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
           <div dangerouslySetInnerHTML={{ __html: formattedMessage }} />
         )}
         
+        {/* Language selection buttons */}
+        {showLanguageButtons && (
+          <Box mt={2} display="flex" gap={1}>
+            <Button 
+              variant="contained" 
+              size="small"
+              onClick={() => onLanguageSelect && onLanguageSelect('English')}
+              sx={{ 
+                backgroundColor: '#004D77',
+                '&:hover': { backgroundColor: '#003A5C' }
+              }}
+            >
+              English
+            </Button>
+            <Button 
+              variant="contained" 
+              size="small"
+              onClick={() => onLanguageSelect && onLanguageSelect('Spanish')}
+              sx={{ 
+                backgroundColor: '#004D77',
+                '&:hover': { backgroundColor: '#003A5C' }
+              }}
+            >
+              Español
+            </Button>
+          </Box>
+        )}
+        
         {/* Citations - only show if not low confidence */}
         {uniqueCitations && uniqueCitations.length > 0 && !isLowConfidence && (
           <Box mt={1}>
@@ -345,28 +374,42 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
           </Box>
         )}
         
+        {/* Example questions for welcome message */}
+        {showExampleQuestions && (
+          <Box mt={2}>
+            <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>
+              Try asking:
+            </Typography>
+            {getTranslation('exampleQuestions', currentLanguage).map((question, index) => (
+              <Button
+                key={index}
+                variant="outlined"
+                size="small"
+                onClick={() => onExampleQuestionClick && onExampleQuestionClick(question)}
+                sx={{
+                  display: 'block',
+                  mb: 1,
+                  textAlign: 'left',
+                  justifyContent: 'flex-start',
+                  textTransform: 'none'
+                }}
+              >
+                {question}
+              </Button>
+            ))}
+          </Box>
+        )}
+        
         {/* Low confidence follow-up option */}
         {isLowConfidence && (
-          <Box 
-            mt={2}
-            p={2}
-            sx={{
-              backgroundColor: '#fcc8a2',
-              borderRadius: 1,
-              border: '1px solid',
-              borderColor: 'warning.main'
-            }}
-          >
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              {TEXT[currentLanguage].LOW_CONFIDENCE_MESSAGE}
-            </Typography>
+          <Box mt={2}>
             <Button 
               variant="outlined" 
               size="small"
               onClick={() => setShowEmailModal(true)}
-              sx={{ mt: 1 }}
+              sx={{ backgroundColor: FOLLOWUP_BUTTON_BACKGROUND }}
             >
-              {TEXT[currentLanguage].REQUEST_FOLLOWUP_BUTTON}
+              {getTranslation('requestFollowUp', currentLanguage)}
             </Button>
           </Box>
         )}
@@ -378,6 +421,7 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
           conversationId={conversationId}
           chatHistory={chatHistory}
           onSubmit={handleEmailSubmit}
+          isExpanded={isExpanded}
         />
         
       </Grid>

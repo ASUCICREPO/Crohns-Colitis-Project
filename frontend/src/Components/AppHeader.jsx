@@ -1,42 +1,72 @@
-import React from "react";
-import { Grid, AppBar } from "@mui/material";
-import Logo from "../Assets/crohns-colitis-logo-header.png";
-import Switch from "./Switch.jsx";
-import { ALLOW_MULTLINGUAL_TOGGLE } from "../utilities/constants";
+"use client"
 
-function AppHeader({ showSwitch }) {
+import { AppBar, Toolbar, Button, Box, Typography, useMediaQuery, IconButton } from "@mui/material"
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
+import MenuIcon from "@mui/icons-material/Menu"
+// Import Catholic symbol from Assets folder
+import CatholicSymbol from "../Assets/catholic.svg"
+import { PRIMARY_MAIN, CHAT_BODY_BACKGROUND, primary_50 } from "../utilities/constants"
+
+function AppHeader({ showLeftNav, setLeftNav }) {
+  const isSmallScreen = useMediaQuery("(max-width:600px)")
 
   return (
     <AppBar
       position="static"
       sx={{
-        backgroundColor: (theme) => theme.palette.background.header,
-        height: { xs: "4rem", sm: "5rem" },
+        backgroundColor: CHAT_BODY_BACKGROUND,
+        height: isSmallScreen ? "4rem" : "5rem",
         boxShadow: "none",
-        borderBottom: (theme) => `1.5px solid ${theme.palette.primary[50]}`,
+        borderBottom: `1.5px solid ${primary_50}`,
       }}
     >
-      <Grid
-        container
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ padding: { xs: "0 1rem", sm: "0 1.5rem", md: "0 3rem" } }}
-        className="appHeight100"
+      <Toolbar
+        sx={{
+          height: "100%",
+          padding: {
+            xs: "0 0.5rem",
+            sm: "0 1rem",
+            md: "0 2rem",
+            lg: "0 3rem",
+          },
+          display: "flex",
+          justifyContent: "space-between",
+        }}
       >
-        <Grid item>
-          <img src={Logo} alt={`App main Logo`} style={{ height: 'auto', maxHeight: '64px', maxWidth: '100%' }} />
-        </Grid>
-        <Grid item>
-          <Grid container alignItems="center" justifyContent="space-evenly" spacing={2}>
-            <Grid item sx={{ display: ALLOW_MULTLINGUAL_TOGGLE && showSwitch ? "flex" : "none" }}>
-              <Switch />
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
+        {/* Left side with menu button (small screens) and logo */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {isSmallScreen && (
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={() => setLeftNav(true)}
+              sx={{ color: PRIMARY_MAIN }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+          <img
+            src={CatholicSymbol || "/placeholder.svg"}
+            alt="Catholic Symbol"
+            width={isSmallScreen ? "50" : "100"}
+            height={isSmallScreen ? "40" : "70"}
+          />
+          <Typography
+            variant={isSmallScreen ? "h5" : "h5"}
+            sx={{
+              fontWeight: "bold",
+              color: PRIMARY_MAIN,
+              fontSize: isSmallScreen ? "1rem" : "1.5rem",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Catholic Charities USA
+          </Typography>
+        </Box>
+      </Toolbar>
     </AppBar>
-  );
+  )
 }
 
-export default AppHeader;
+export default AppHeader
