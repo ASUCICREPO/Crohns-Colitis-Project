@@ -66,6 +66,13 @@ ROLE_NAME="${PROJECT_NAME}-codebuild-service-role"
 POLICY_NAME="${PROJECT_NAME}-deployment-policy"
 echo "Checking for IAM role: $ROLE_NAME"
 
+# Check if role exists
+if aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1; then
+  ROLE_EXISTS=true
+else
+  ROLE_EXISTS=false
+fi
+
 # Create custom policy document with specific permissions
 POLICY_DOC=$(cat <<EOF
 {
@@ -165,7 +172,7 @@ POLICY_DOC=$(cat <<EOF
 EOF
 )
 
-if aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1; then
+if [ "$ROLE_EXISTS" = true ]; then
   echo "✓ IAM role exists: $ROLE_NAME"
   ROLE_ARN=$(aws iam get-role --role-name "$ROLE_NAME" --query 'Role.Arn' --output text)
   
