@@ -69,12 +69,16 @@ echo "Checking for IAM role: $ROLE_NAME"
 # Check if role exists
 set +e  # Temporarily disable exit on error
 aws iam get-role --role-name "$ROLE_NAME" >/dev/null 2>&1
-if [ $? -eq 0 ]; then
+ROLE_CHECK_RESULT=$?
+if [ $ROLE_CHECK_RESULT -eq 0 ]; then
   ROLE_EXISTS=true
+  echo "DEBUG: Role exists, setting ROLE_EXISTS=true"
 else
   ROLE_EXISTS=false
+  echo "DEBUG: Role does not exist, setting ROLE_EXISTS=false"
 fi
 set -e  # Re-enable exit on error
+echo "DEBUG: ROLE_EXISTS=$ROLE_EXISTS"
 
 # Create custom policy document with specific permissions
 POLICY_DOC=$(cat <<EOF
