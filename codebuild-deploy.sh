@@ -250,7 +250,7 @@ ARTIFACTS='{"type":"NO_ARTIFACTS"}'
 
 SOURCE=$(cat <<EOF
 {
-  "type": "GITHUB_PUBLIC",
+  "type": "GITHUB",
   "location": "$GITHUB_URL",
   "buildspec": "buildspec.yml",
   "gitCloneDepth": 1
