@@ -261,7 +261,7 @@ EOF
 # Delete existing project if it exists
 if aws codebuild batch-get-projects --names "$CODEBUILD_PROJECT_NAME" --query 'projects[0].name' --output text 2>/dev/null | grep -q "$CODEBUILD_PROJECT_NAME"; then
   echo "Deleting existing CodeBuild project..."
-  aws codebuild delete-project --name "$CODEBUILD_PROJECT_NAME"
+  aws codebuild delete-project --name "$CODEBUILD_PROJECT_NAME" --output text
   sleep 5
 fi
 
