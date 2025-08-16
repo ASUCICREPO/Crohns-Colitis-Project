@@ -253,7 +253,8 @@ fi
 aws iam put-role-policy \
   --role-name "$ROLE_NAME" \
   --policy-name "$SSM_POLICY_NAME" \
-  --policy-document "$SSM_POLICY_DOC"
+  --policy-document "$SSM_POLICY_DOC" \
+  --output text
 
 echo "Waiting for IAM permissions to propagate..."
 sleep 10
