@@ -249,11 +249,11 @@ EOF
 ARTIFACTS='{"type":"NO_ARTIFACTS"}'
 
 # For public repos, bypass CodeConnections and just clone manually in buildspec
-BUILDSPEC_CONTENT=$(cat buildspec.yml)
+BUILDSPEC_CONTENT=$(cat buildspec.yml | jq -Rs .)
 SOURCE=$(cat <<EOF
 {
   "type": "NO_SOURCE",
-  "buildspec": "$BUILDSPEC_CONTENT"
+  "buildspec": $BUILDSPEC_CONTENT
 }
 EOF
 )
