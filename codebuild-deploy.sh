@@ -249,7 +249,14 @@ EOF
 ARTIFACTS='{"type":"NO_ARTIFACTS"}'
 
 # For public repos, bypass CodeConnections and just clone manually in buildspec
-SOURCE='{"type": "NO_SOURCE", "buildspec": "buildspec.yml"}'
+BUILDSPEC_CONTENT=$(cat buildspec.yml)
+SOURCE=$(cat <<EOF
+{
+  "type": "NO_SOURCE",
+  "buildspec": "$BUILDSPEC_CONTENT"
+}
+EOF
+)
 
 # Delete existing project if it exists
 if aws codebuild batch-get-projects --names "$CODEBUILD_PROJECT_NAME" --query 'projects[0].name' --output text 2>/dev/null | grep -q "$CODEBUILD_PROJECT_NAME"; then
