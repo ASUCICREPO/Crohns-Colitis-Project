@@ -164,13 +164,6 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
-    new cdk.CfnOutput(this, 'QBusinessDataSourceId', {
-      value: webCrawlerDataSource.ref,
-      description: 'Q Business Data Source ID',
-    });
-
-
-
     // Q Business Retriever
     const qBusinessRetriever = new cdk.CfnResource(this, 'QBusinessRetriever', {
       type: 'AWS::QBusiness::Retriever',
