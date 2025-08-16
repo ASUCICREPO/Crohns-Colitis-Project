@@ -10,15 +10,11 @@ phases:
       - git clone https://github.com/ASUCICREPO/Crohns-Colitis-Project.git .
       - echo "Installing dependencies..."
       
-      # Install Node.js 18 (CloudShell compatibility)
-      - curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
-      - sudo yum install -y nodejs
-      
       # Install CDK
       - npm install -g aws-cdk@2.161.1
       
       # Install jq for JSON parsing
-      - sudo yum install -y jq
+      - apt-get update && apt-get install -y jq
       
       - npm install -g @aws-amplify/cli
       
