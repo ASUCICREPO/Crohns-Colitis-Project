@@ -121,6 +121,7 @@ export class QBusinessStack extends cdk.Stack {
         IndexId: qBusinessIndex.getAtt('IndexId'),
         DisplayName: `${projectName}-webcrawler`,
         Description: 'Web crawler for Crohns Colitis websites',
+        Type: 'WEBCRAWLER',
         RoleArn: webCrawlerRole.roleArn,
         Configuration: {
           WebCrawlerConfiguration: {
