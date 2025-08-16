@@ -63,35 +63,11 @@ phases:
   post_build:
     commands:
       - echo "Post-build phase started on `date`"
-      
-      # Deploy to S3 for static hosting (simpler than Amplify)
-      - echo "Deploying frontend to S3..."
-      - |
-        BUCKET_NAME="crohns-colitis-frontend-$(date +%s)"
-        aws s3 mb s3://$BUCKET_NAME
-        aws s3 sync Frontend/build/ s3://$BUCKET_NAME --delete
-        aws s3 website s3://$BUCKET_NAME --index-document index.html --error-document index.html
-        
-        # Make bucket public for static website
-        aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy "{
-          \"Version\": \"2012-10-17\",
-          \"Statement\": [{
-            \"Sid\": \"PublicReadGetObject\",
-            \"Effect\": \"Allow\",
-            \"Principal\": \"*\",
-            \"Action\": \"s3:GetObject\",
-            \"Resource\": \"arn:aws:s3:::$BUCKET_NAME/*\"
-          }]
-        }"
-        
-        WEBSITE_URL="http://$BUCKET_NAME.s3-website-us-west-2.amazonaws.com"
-        echo "Frontend deployed at: $WEBSITE_URL"
-        echo "WEBSITE_URL=$WEBSITE_URL" >> ../deployment-info.txt
+      - echo "Frontend build completed. Amplify will handle deployment using amplify.yml"
 
 artifacts:
   files:
     - outputs.json
-    - deployment-info.txt
     - Frontend/build/**/*
   name: crohns-colitis-deployment
 
