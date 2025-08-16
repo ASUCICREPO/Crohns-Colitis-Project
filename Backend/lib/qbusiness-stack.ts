@@ -113,54 +113,6 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
-    // Web Crawler Data Source (without auto-sync)
-    const webCrawlerDataSource = new cdk.CfnResource(this, 'WebCrawlerDataSource', {
-      type: 'AWS::QBusiness::DataSource',
-      properties: {
-        ApplicationId: qBusinessApp.ref,
-        IndexId: qBusinessIndex.getAtt('IndexId'),
-        DisplayName: `${projectName}-webcrawler`,
-        Description: 'Web crawler for Crohns Colitis websites',
-        RoleArn: webCrawlerRole.roleArn,
-        Configuration: {
-          Type: 'WEBCRAWLER',
-          WebCrawlerConfiguration: {
-            Urls: [
-              'https://www.crohnscolitisfoundation.org/',
-              'https://gastro.org/',
-              'https://www.crohnscolitiscommunity.org/crohns-colitis-expert-qa'
-            ],
-            CrawlDepth: 3,
-            CrawlSubDomain: true,
-            CrawlAllDomain: false,
-            MaxLinksPerUrl: 100,
-            RateLimit: 300,
-            MaxFileSize: 50,
-            HonorRobots: true,
-            CrawlAttachments: true,
-            AuthenticationConfiguration: {
-              AuthenticationType: 'NoAuthentication'
-            }
-          }
-        },
-      },
-    });
-
-    // Web Crawler Role
-    const webCrawlerRole = new iam.Role(this, "WebCrawlerRole", {
-      assumedBy: new iam.ServicePrincipal("qbusiness.amazonaws.com"),
-      inlinePolicies: {
-        WebCrawlerPolicy: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              actions: ["qbusiness:BatchPutDocument", "qbusiness:BatchDeleteDocument"],
-              resources: ["*"],
-            }),
-          ],
-        }),
-      },
-    });
-
     // Web Crawler Data Source
     const webCrawlerDataSource = new cdk.CfnResource(this, 'WebCrawlerDataSource', {
       type: 'AWS::QBusiness::DataSource',
@@ -365,11 +317,6 @@ export class QBusinessStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'QBusinessIndexId', {
       value: qBusinessIndex.getAtt('IndexId').toString(),
       description: 'Q Business Index ID',
-    });
-
-    new cdk.CfnOutput(this, 'QBusinessDataSourceId', {
-      value: webCrawlerDataSource.ref,
-      description: 'Q Business Data Source ID',
     });
 
     new cdk.CfnOutput(this, 'QBusinessDataSourceId', {
