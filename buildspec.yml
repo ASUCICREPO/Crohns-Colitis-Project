@@ -6,6 +6,8 @@ phases:
       nodejs: 18
       python: 3.11
     commands:
+      - echo "Cloning public repo..."
+      - git clone https://github.com/ASUCICREPO/Crohns-Colitis-Project.git .
       - echo "Installing dependencies..."
       
       # Install Node.js 18 (CloudShell compatibility)
@@ -23,15 +25,13 @@ phases:
   pre_build:
     commands:
       - echo "Pre-build phase started on `date`"
-      - echo "Cloning repository..."
-      - git clone https://github.com/ASUCICREPO/Crohns-Colitis-Project.git .
       - cd backend
       - npm install
       - npm run build
       
   build:
     commands:
-      - echo "Build phase started on `date`"
+      - echo "✅ Build started for Crohn's Colitis project"
       
       # Deploy backend CDK stack
       - echo "Deploying backend infrastructure..."
