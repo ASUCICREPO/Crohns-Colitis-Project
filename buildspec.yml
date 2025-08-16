@@ -23,6 +23,8 @@ phases:
   pre_build:
     commands:
       - echo "Pre-build phase started on `date`"
+      - echo "Cloning repository..."
+      - git clone https://github.com/ASUCICREPO/Crohns-Colitis-Project.git .
       - cd backend
       - npm install
       - npm run build
