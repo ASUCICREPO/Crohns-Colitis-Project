@@ -29,6 +29,11 @@ phases:
     commands:
       - echo "✅ Build started for Crohn's Colitis project"
       
+      # Clean up failed stack if exists
+      - echo "Cleaning up any failed stacks..."
+      - aws cloudformation delete-stack --stack-name CrohnsColitisQBusinessStack || true
+      - aws cloudformation wait stack-delete-complete --stack-name CrohnsColitisQBusinessStack || true
+      
       # Bootstrap CDK if needed
       - echo "Bootstrapping CDK..."
       - cdk bootstrap --require-approval never
