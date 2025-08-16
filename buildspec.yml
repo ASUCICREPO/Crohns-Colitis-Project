@@ -35,7 +35,7 @@ phases:
       
       # Deploy backend CDK stack
       - echo "Deploying backend infrastructure..."
-      - cdk deploy --require-approval never --outputs-file ../outputs.json --verbose || (echo "CDK Deploy failed. Checking logs..." && cdk ls && exit 1)
+      - cdk deploy --require-approval never --outputs-file ../outputs.json
       
       # Extract API endpoints from CDK outputs
       - echo "Extracting API endpoints..."
@@ -77,5 +77,5 @@ artifacts:
 
 cache:
   paths:
-    - backend/node_modules/**/*
-    - frontend/node_modules/**/*
+    - Backend/node_modules/**/*
+    - Frontend/node_modules/**/*

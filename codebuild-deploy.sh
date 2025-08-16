@@ -222,6 +222,42 @@ else
   sleep 10
 fi
 
+# ----------------------------
+# Add SSM permissions for CDK bootstrap
+# ----------------------------
+SSM_POLICY_NAME="CDK-SSM-Access"
+SSM_POLICY_DOC=$(cat <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters"
+      ],
+      "Resource": "arn:aws:ssm:${AWS_REGION}:${AWS_ACCOUNT_ID}:parameter/cdk-bootstrap/hnb659fds/version"
+    }
+  ]
+}
+EOF
+)
+
+# Attach or update inline policy
+if aws iam get-role-policy --role-name "$ROLE_NAME" --policy-name "$SSM_POLICY_NAME" >/dev/null 2>&1; then
+  echo "Updating existing SSM inline policy..."
+else
+  echo "Creating new SSM inline policy..."
+fi
+
+aws iam put-role-policy \
+  --role-name "$ROLE_NAME" \
+  --policy-name "$SSM_POLICY_NAME" \
+  --policy-document "$SSM_POLICY_DOC"
+
+echo "Waiting for IAM permissions to propagate..."
+sleep 10
+
 # Create CodeBuild project
 CODEBUILD_PROJECT_NAME="${PROJECT_NAME}-deploy"
 echo "Creating CodeBuild project: $CODEBUILD_PROJECT_NAME"
