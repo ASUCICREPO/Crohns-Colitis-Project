@@ -21,7 +21,7 @@ phases:
   pre_build:
     commands:
       - echo "Pre-build phase started on `date`"
-      - cd backend
+      - cd Backend
       - npm install
       - npm run build
       
@@ -44,7 +44,7 @@ phases:
       
       # Configure frontend environment
       - echo "Configuring frontend with API endpoints..."
-      - cd widget
+      - cd Frontend
       - |
         cat > .env.production << EOF
         VITE_CHAT_API_URL=$CHAT_API_URL
@@ -69,7 +69,7 @@ phases:
       - |
         BUCKET_NAME="crohns-colitis-frontend-$(date +%s)"
         aws s3 mb s3://$BUCKET_NAME
-        aws s3 sync widget/build/ s3://$BUCKET_NAME --delete
+        aws s3 sync Frontend/build/ s3://$BUCKET_NAME --delete
         aws s3 website s3://$BUCKET_NAME --index-document index.html --error-document index.html
         
         # Make bucket public for static website
@@ -92,7 +92,7 @@ artifacts:
   files:
     - outputs.json
     - deployment-info.txt
-    - frontend/build/**/*
+    - Frontend/build/**/*
   name: crohns-colitis-deployment
 
 cache:
