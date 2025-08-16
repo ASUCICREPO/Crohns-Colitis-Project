@@ -29,11 +29,9 @@ phases:
     commands:
       - echo "✅ Build started for Crohn's Colitis project"
       
-      # Clean up failed stack if exists
-      - echo "Cleaning up any failed stacks..."
-      - aws cloudformation delete-stack --stack-name CrohnsColitisQBusinessStack || true
-      - sleep 30
-      - aws cloudformation describe-stacks --stack-name CrohnsColitisQBusinessStack --query 'Stacks[0].StackStatus' || echo "Stack deleted"
+      # Use timestamped stack name to avoid conflicts
+      - export STACK_NAME="CrohnsColitisQBusinessStack-$(date +%s)"
+      - echo "Using stack name: $STACK_NAME"
       
       # Bootstrap CDK if needed
       - echo "Bootstrapping CDK..."
@@ -41,7 +39,7 @@ phases:
       
       # Deploy backend CDK stack
       - echo "Deploying backend infrastructure..."
-      - cdk deploy --require-approval never --outputs-file ../outputs.json
+      - cdk deploy --require-approval never --outputs-file ../outputs.json CrohnsColitisQBusinessStack
       
       # Extract API endpoints from CDK outputs
       - echo "Extracting API endpoints..."
