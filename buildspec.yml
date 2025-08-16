@@ -9,13 +9,8 @@ phases:
       - echo "Cloning public repo..."
       - git clone https://github.com/ASUCICREPO/Crohns-Colitis-Project.git .
       - echo "Installing dependencies..."
-      
-      # Install CDK
       - npm install -g aws-cdk@2.161.1
-      
-      # Install jq for JSON parsing
       - apt-get update && apt-get install -y jq
-      
       - npm install -g @aws-amplify/cli
       
   pre_build:
@@ -27,30 +22,19 @@ phases:
       
   build:
     commands:
-      - echo "✅ Build started for Crohn's Colitis project"
-      
-      # Use timestamped stack name to avoid conflicts
+      - echo "Build started for Crohn's Colitis project"
       - export STACK_NAME="CrohnsColitisQBusinessStack-$(date +%s)"
-      - echo "Using stack name: $STACK_NAME"
-      
-      # Bootstrap CDK if needed
+      - echo "Using stack name $STACK_NAME"
       - echo "Bootstrapping CDK..."
       - cdk bootstrap --require-approval never
-      
-      # Deploy backend CDK stack
       - echo "Deploying backend infrastructure..."
       - cdk deploy --require-approval never --outputs-file ../outputs.json CrohnsColitisQBusinessStack
-      
-      # Extract API endpoints from CDK outputs
       - echo "Extracting API endpoints..."
       - cd ..
       - export CHAT_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ChatEndpoint')
       - export EMAIL_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.EmailEndpoint')
       - export CONVERSATION_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ConversationEndpoint')
-      - export TRANSLATE_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.TranslateEndpoint')
       - export QBUSINESS_APP_ID=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.QBusinessApplicationId')
-      
-      # Configure frontend environment
       - echo "Configuring frontend with API endpoints..."
       - cd Frontend
       - echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env
@@ -58,8 +42,6 @@ phases:
       - echo "REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL" >> .env
       - echo "REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID" >> .env
       - echo "REACT_APP_REGION=us-west-2" >> .env
-      
-      # Install frontend dependencies and build
       - echo "Building frontend..."
       - npm install
       - npm run build
