@@ -123,43 +123,24 @@ export class QBusinessStack extends cdk.Stack {
         Description: 'Web crawler for Crohns Colitis websites',
         RoleArn: webCrawlerRole.roleArn,
         Configuration: {
-          type: 'WEBCRAWLER',
-          connectionConfiguration: {
-            repositoryEndpointMetadata: {
-              authentication: 'NoAuthentication',
-              seedUrlConnections: [
-                { seedUrl: 'https://www.crohnscolitisfoundation.org/' },
-                { seedUrl: 'https://gastro.org/' },
-                { seedUrl: 'https://www.crohnscolitiscommunity.org/crohns-colitis-expert-qa' }
-              ],
-            },
-          },
-          repositoryConfigurations: {
-            webPage: {
-              fieldMappings: [
-                {
-                  indexFieldName: '_source_uri',
-                  indexFieldType: 'STRING',
-                  dataSourceFieldName: 'sourceUrl',
-                },
-                {
-                  indexFieldName: '_document_title',
-                  indexFieldType: 'STRING',
-                  dataSourceFieldName: 'title',
-                },
-              ],
-            },
-          },
-          additionalProperties: {
-            rateLimit: '300',
-            maxFileSize: '50',
-            crawlDepth: '3',
-            maxLinksPerUrl: '100',
-            crawlSubDomain: true,
-            crawlAllDomain: false,
-            honorRobots: true,
-            crawlAttachments: true,
-          },
+          WebCrawlerConfiguration: {
+            Urls: [
+              'https://www.crohnscolitisfoundation.org/',
+              'https://gastro.org/',
+              'https://www.crohnscolitiscommunity.org/crohns-colitis-expert-qa'
+            ],
+            CrawlDepth: 3,
+            CrawlSubDomain: true,
+            CrawlAllDomain: false,
+            MaxLinksPerUrl: 100,
+            RateLimit: 300,
+            MaxFileSize: 50,
+            HonorRobots: true,
+            CrawlAttachments: true,
+            AuthenticationConfiguration: {
+              AuthenticationType: 'NoAuthentication'
+            }
+          }
         },
       },
     });
