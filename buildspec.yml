@@ -32,7 +32,8 @@ phases:
       # Clean up failed stack if exists
       - echo "Cleaning up any failed stacks..."
       - aws cloudformation delete-stack --stack-name CrohnsColitisQBusinessStack || true
-      - aws cloudformation wait stack-delete-complete --stack-name CrohnsColitisQBusinessStack || true
+      - sleep 30
+      - aws cloudformation describe-stacks --stack-name CrohnsColitisQBusinessStack --query 'Stacks[0].StackStatus' || echo "Stack deleted"
       
       # Bootstrap CDK if needed
       - echo "Bootstrapping CDK..."

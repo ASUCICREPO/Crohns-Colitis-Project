@@ -113,7 +113,7 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
-    // Web Crawler Data Source
+    // Web Crawler Data Source (without auto-sync)
     const webCrawlerDataSource = new cdk.CfnResource(this, 'WebCrawlerDataSource', {
       type: 'AWS::QBusiness::DataSource',
       properties: {
@@ -124,7 +124,6 @@ export class QBusinessStack extends cdk.Stack {
         RoleArn: webCrawlerRole.roleArn,
         Configuration: {
           type: 'WEBCRAWLER',
-          syncMode: 'FORCED_FULL_CRAWL',
           connectionConfiguration: {
             repositoryEndpointMetadata: {
               authentication: 'NoAuthentication',
@@ -164,6 +163,13 @@ export class QBusinessStack extends cdk.Stack {
         },
       },
     });
+
+    new cdk.CfnOutput(this, 'QBusinessDataSourceId', {
+      value: webCrawlerDataSource.ref,
+      description: 'Q Business Data Source ID',
+    });
+
+
 
     // Q Business Retriever
     const qBusinessRetriever = new cdk.CfnResource(this, 'QBusinessRetriever', {

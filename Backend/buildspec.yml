@@ -54,11 +54,6 @@ phases:
           echo "$DATA_SOURCE_INFO" | jq -r '.[] | @base64' | while read -r data_source; do
             DS_ID=$(echo "$data_source" | base64 -d | jq -r '.id')
             DS_NAME=$(echo "$data_source" | base64 -d | jq -r '.name')
-            aws qbusiness start-data-source-sync-job \
-              --application-id "$APPLICATION_ID" \
-              --data-source-id "$DS_ID" \
-              --index-id "$INDEX_ID" \
-              --region "$CDK_DEFAULT_REGION" || echo "Sync job may already be running for $DS_NAME"
           done
           
           echo "=== PHASE 4: Amplify App Setup ==="
