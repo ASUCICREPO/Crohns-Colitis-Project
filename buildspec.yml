@@ -10,7 +10,8 @@ phases:
       - git clone https://github.com/ASUCICREPO/Crohns-Colitis-Project.git .
       - echo "Installing dependencies..."
       - npm install -g aws-cdk@2.161.1
-      - apt-get update && apt-get install -y jq
+      - apt-get update --fix-missing || true
+      - apt-get install -y jq || (curl -L https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o /usr/local/bin/jq && chmod +x /usr/local/bin/jq)
       - npm install -g @aws-amplify/cli
       
   pre_build:
