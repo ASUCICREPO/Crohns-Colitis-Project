@@ -29,6 +29,10 @@ phases:
     commands:
       - echo "✅ Build started for Crohn's Colitis project"
       
+      # Bootstrap CDK if needed
+      - echo "Bootstrapping CDK..."
+      - cdk bootstrap --require-approval never
+      
       # Deploy backend CDK stack
       - echo "Deploying backend infrastructure..."
       - cdk deploy --require-approval never --outputs-file ../outputs.json
