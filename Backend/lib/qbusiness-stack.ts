@@ -70,6 +70,8 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
+    // Debug: print values before creating DataSource
+
 
 
     // Q Business Index
@@ -98,6 +100,8 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
+
+
     // Web Crawler Role
     const webCrawlerRole = new iam.Role(this, "WebCrawlerRole", {
       assumedBy: new iam.ServicePrincipal("qbusiness.amazonaws.com"),
@@ -113,7 +117,7 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
-    // Web Crawler Data Source
+    // Web Crawler Data Source using raw CloudFormation
     const webCrawlerDataSource = new cdk.CfnResource(this, 'WebCrawlerDataSource', {
       type: 'AWS::QBusiness::DataSource',
       properties: {
@@ -121,8 +125,8 @@ export class QBusinessStack extends cdk.Stack {
         IndexId: qBusinessIndex.getAtt('IndexId'),
         DisplayName: 'WebCrawlerDataSource',
         RoleArn: webCrawlerRole.roleArn,
-        Configuration: {
-          Type: 'WEBCRAWLER',
+        DataSourceType: 'WEBCRAWLER',
+        Configuration: JSON.stringify({
           WebCrawlerConfiguration: {
             Urls: {
               SeedUrls: [
@@ -132,8 +136,6 @@ export class QBusinessStack extends cdk.Stack {
               ]
             },
             CrawlDepth: 3,
-            CrawlSubDomain: true,
-            CrawlAllDomain: false,
             MaxLinksPerUrl: 100,
             RateLimit: 300,
             MaxFileSize: 50,
@@ -143,7 +145,7 @@ export class QBusinessStack extends cdk.Stack {
               AuthenticationType: 'NoAuthentication'
             }
           }
-        }
+        })
       },
     });
 
@@ -161,7 +163,9 @@ export class QBusinessStack extends cdk.Stack {
         },
       },
     });
-
+    console.log("📌 ApplicationId:", qBusinessApp.ref);
+    console.log("📌 IndexId:", qBusinessIndex.getAtt('IndexId'));
+    console.log("📌 WebCrawlerRole ARN:", webCrawlerRole.roleArn);
     // DynamoDB Table for Conversations
     const conversationTable = new dynamodb.Table(this, 'ConversationTable', {
       tableName: config.dynamodb.tableName,
