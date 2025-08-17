@@ -125,8 +125,8 @@ export class QBusinessStack extends cdk.Stack {
         IndexId: qBusinessIndex.getAtt('IndexId'),
         DisplayName: 'WebCrawlerDataSource',
         RoleArn: webCrawlerRole.roleArn,
-        DataSourceType: 'WEBCRAWLER',
-        Configuration: JSON.stringify({
+        Type: 'WEBCRAWLER',
+        Configuration: {
           WebCrawlerConfiguration: {
             Urls: {
               SeedUrls: [
@@ -145,7 +145,7 @@ export class QBusinessStack extends cdk.Stack {
               AuthenticationType: 'NoAuthentication'
             }
           }
-        })
+        }
       },
     });
 
