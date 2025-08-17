@@ -120,9 +120,9 @@ export class QBusinessStack extends cdk.Stack {
         ApplicationId: qBusinessApp.ref,
         IndexId: qBusinessIndex.getAtt('IndexId'),
         DisplayName: 'WebCrawlerDataSource',
-        Type: 'WEBCRAWLER',
         RoleArn: webCrawlerRole.roleArn,
         Configuration: {
+          Type: 'WEBCRAWLER',
           WebCrawlerConfiguration: {
             Urls: {
               SeedUrls: [
