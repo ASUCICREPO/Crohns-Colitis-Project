@@ -4,7 +4,7 @@ frontend:
     preBuild:
       commands:
         - cd Frontend
-        - npm ci
+        - npm install
     build:
       commands:
         - npm run build

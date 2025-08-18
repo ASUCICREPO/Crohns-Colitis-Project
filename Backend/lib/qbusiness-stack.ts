@@ -4,7 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as amplify from 'aws-cdk-lib/aws-amplify';
+
 import { Construct } from 'constructs';
 import { config } from '../config/environment';
 import * as path from 'path';
@@ -374,50 +374,10 @@ export class QBusinessStack extends cdk.Stack {
       description: 'DynamoDB table name for conversations',
     });
 
-    // Amplify App for Frontend
-    const amplifyApp = new amplify.App(this, 'CrohnsColitisAmplifyApp', {
-      sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
-        owner: 'ASUCICREPO',
-        repository: 'Crohns-Colitis-Project',
-      }),
-      buildSpec: amplify.BuildSpec.fromObjectToYaml({
-        version: '1.0',
-        frontend: {
-          phases: {
-            preBuild: {
-              commands: [
-                'cd Frontend',
-                'npm install'
-              ]
-            },
-            build: {
-              commands: [
-                'npm run build'
-              ]
-            }
-          },
-          artifacts: {
-            baseDirectory: 'Frontend/build',
-            files: ['**/*']
-          }
-        }
-      }),
-      environmentVariables: {
-        'REACT_APP_CHAT_ENDPOINT': api.url + 'chat',
-        'REACT_APP_EMAIL_ENDPOINT': api.url + 'email',
-        'REACT_APP_CONVERSATION_ENDPOINT': api.url + 'conversation',
-        'REACT_APP_APPLICATION_ID': qBusinessApp.ref,
-        'REACT_APP_REGION': this.region,
-      },
-    });
-
-    const mainBranch = amplifyApp.addBranch('main', {
-      autoBuild: true,
-    });
-
-    new cdk.CfnOutput(this, 'AmplifyAppUrl', {
-      value: `https://${mainBranch.branchName}.${amplifyApp.defaultDomain}`,
-      description: 'Amplify Frontend URL',
+    // Frontend will be deployed separately via Amplify Console or S3
+    new cdk.CfnOutput(this, 'FrontendInstructions', {
+      value: 'Deploy frontend manually using the API endpoints above',
+      description: 'Frontend deployment instructions',
     });
   }
 }

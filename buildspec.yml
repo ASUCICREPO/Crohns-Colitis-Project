@@ -59,11 +59,40 @@ phases:
   post_build:
     commands:
       - echo "Post-build phase started on `date`"
-      - echo "Frontend build completed. Amplify will handle deployment using amplify.yml"
+      - |
+        if [ -d "Frontend/build" ]; then
+          echo "Deploying frontend to Amplify..."
+          
+          # Create Amplify app
+          APP_NAME="crohns-colitis-app"
+          
+          # Check if app exists
+          if aws amplify get-app --app-id $APP_NAME 2>/dev/null; then
+            echo "Amplify app exists, updating..."
+          else
+            echo "Creating new Amplify app..."
+            aws amplify create-app --name $APP_NAME --repository https://github.com/ASUCICREPO/Crohns-Colitis-Project --platform WEB --environment-variables REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL,REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL,REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL,REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID,REACT_APP_REGION=us-west-2 --build-spec 'version: 1\nfrontend:\n  phases:\n    preBuild:\n      commands:\n        - cd Frontend\n        - npm install\n    build:\n      commands:\n        - npm run build\n  artifacts:\n    baseDirectory: Frontend/build\n    files:\n      - "**/*"' > amplify-app.json
+            
+            APP_ID=$(cat amplify-app.json | jq -r '.app.appId')
+            
+            # Create branch
+            aws amplify create-branch --app-id $APP_ID --branch-name main --enable-auto-build
+            
+            # Start deployment
+            aws amplify start-deployment --app-id $APP_ID --branch-name main
+            
+            AMPLIFY_URL="https://main.$APP_ID.amplifyapp.com"
+            echo "Frontend deployed at: $AMPLIFY_URL"
+            echo "AMPLIFY_URL=$AMPLIFY_URL" >> deployment-info.txt
+          fi
+        else
+          echo "Frontend build not found, skipping deployment"
+        fi
 
 artifacts:
   files:
     - outputs.json
+    - deployment-info.txt
     - Frontend/build/**/*
   name: crohns-colitis-deployment
 
