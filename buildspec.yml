@@ -43,6 +43,7 @@ phases:
       - echo "REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID" >> .env.production
       - echo "REACT_APP_REGION=us-west-2" >> .env.production
       - npm install --legacy-peer-deps
+      - npm install @csstools/normalize.css --legacy-peer-deps
       - npm run build
       - echo "Frontend build completed"
       - ls -la build/
