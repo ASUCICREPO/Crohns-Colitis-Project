@@ -11,7 +11,6 @@ phases:
       - cp -r /tmp/repo/* .
       - echo "Installing AWS CDK CLI..."
       - npm install -g aws-cdk@2.161.1
-      - ls -la
       - cd Backend
       - npm install
 
@@ -32,99 +31,30 @@ phases:
       - export EMAIL_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.EmailEndpoint // empty')
       - export CONVERSATION_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ConversationEndpoint // empty')
       - export QBUSINESS_APP_ID=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.QBusinessApplicationId // empty')
-      - echo "Chat API URL: $CHAT_API_URL"
-      - echo "Email API URL: $EMAIL_API_URL"
-          
-          echo "=== PHASE 2: Amplify App Setup ==="
-          echo "Creating/updating Amplify app..."
-          AMPLIFY_APP_NAME="crohns-colitis-app"
-          AMPLIFY_BRANCH_NAME="main"
-          
-          AMPLIFY_APP_ID=$(aws amplify create-app \
-            --name "$AMPLIFY_APP_NAME" \
-            --platform WEB \
-            --environment-variables "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL,REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL,REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL,REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID,REACT_APP_REGION=us-west-2" \
-            --query 'app.appId' \
-            --output text 2>/dev/null || \
-            aws amplify list-apps \
-            --query "apps[?name=='$AMPLIFY_APP_NAME'].appId" \
-            --output text)
-            
-          aws amplify create-branch \
-            --app-id "$AMPLIFY_APP_ID" \
-            --branch-name "$AMPLIFY_BRANCH_NAME" \
-            --stage PRODUCTION \
-            --environment-variables "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL,REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL,REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL,REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID,REACT_APP_REGION=us-west-2" \
-            --no-cli-pager 2>/dev/null || echo "Branch already exists"
-          
-          echo "=== PHASE 3: Frontend Build and Deployment ==="
-          cd ../Frontend
-          
-          export PUBLIC_URL=""
-          export GENERATE_SOURCEMAP=false
-          
-          echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env.production
-          echo "REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL" >> .env.production
-          echo "REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL" >> .env.production
-          echo "REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID" >> .env.production
-          echo "REACT_APP_REGION=us-west-2" >> .env.production
-          echo "PUBLIC_URL=" >> .env.production
-          echo "GENERATE_SOURCEMAP=false" >> .env.production
-          
-          rm -rf build/ node_modules/.cache/
-          npm ci --production=false
-          npm run build
-          
-          if [ ! -f "build/index.html" ]; then
-            echo "❌ ERROR: Build failed - index.html not found!"
-            exit 1
-          fi
-          
-          echo "✅ Build successful"
-          
-          cd build
-          zip -r ../build.zip . -x "*.DS_Store" "*.map"
-          cd ..
-          
-          # Deploy to Amplify
-          aws amplify start-deployment \
-            --app-id "$AMPLIFY_APP_ID" \
-            --branch-name "$AMPLIFY_BRANCH_NAME" \
-            --source-url "build.zip"
-          
-          echo "✅ Frontend deployment started"
-          echo "📱 Amplify App URL: https://$AMPLIFY_BRANCH_NAME.$AMPLIFY_APP_ID.amplifyapp.com"
-          
-          echo "$AMPLIFY_APP_ID" > ../amplify_app_id.txt
-          
-          cd ../Backend
-        fi
+      - echo "Chat API URL:$CHAT_API_URL"
+      - echo "Email API URL:$EMAIL_API_URL"
+      - echo "=== PHASE 2: Frontend Build ==="
+      - cd ../Frontend
+      - echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env.production
+      - echo "REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL" >> .env.production
+      - echo "REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL" >> .env.production
+      - echo "REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID" >> .env.production
+      - echo "REACT_APP_REGION=us-west-2" >> .env.production
+      - npm ci --production=false
+      - npm run build
+      - echo "Frontend build completed"
+      - ls -la build/
 
   post_build:
     commands:
       - echo "=== Deployment Complete ==="
-      - |
-        if [ "$ACTION" = "deploy" ]; then
-          AMPLIFY_APP_ID=$(cat ../amplify_app_id.txt 2>/dev/null || echo "")
-          echo "🎉 Crohn's Colitis Deployment Summary:"
-          echo "✅ Backend: Deployed via CloudFormation"
-          echo "✅ Amplify App: Created/Updated via CLI"
-          echo "✅ Frontend: Deployed to Amplify"
-          echo ""
-          echo "🔗 URLs:"
-          echo "Chat API: $CHAT_API_URL"
-          echo "Email API: $EMAIL_API_URL"
-          if [ -n "$AMPLIFY_APP_ID" ]; then
-            echo "Amplify URL: https://$AMPLIFY_BRANCH_NAME.$AMPLIFY_APP_ID.amplifyapp.com"
-          fi
-          echo ""
-          echo "📊 Monitor:"
-          echo "- Q Business application in Q Business Console"
-          echo "- Amplify deployment in Amplify Console"
-        fi
+      - echo "Backend deployed successfully"
+      - echo "Frontend built successfully"
+      - echo "Chat API:$CHAT_API_URL"
+      - echo "Email API:$EMAIL_API_URL"
 
 artifacts:
   files:
     - outputs.json
-    - amplify_app_id.txt
+    - Frontend/build/**/*
   name: crohns-colitis-deployment
