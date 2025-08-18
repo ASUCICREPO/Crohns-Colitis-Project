@@ -37,6 +37,9 @@ phases:
       - export CONVERSATION_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ConversationEndpoint')
       - export QBUSINESS_APP_ID=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.QBusinessApplicationId')
       - echo "Configuring frontend with API endpoints..."
+      - ls -la
+      - echo "Looking for Frontend directory..."
+      - find . -name "*rontend*" -type d
       - cd Frontend
       - echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env
       - echo "REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL" >> .env
