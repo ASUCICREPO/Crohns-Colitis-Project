@@ -34,7 +34,7 @@ phases:
       - echo "Chat API URL $CHAT_API_URL"
       - echo "Email API URL $EMAIL_API_URL"
       - echo "=== PHASE 2 Frontend Build ==="
-      - cd ../Frontend
+      - cd ../frontend
       - echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env.production
       - echo "REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL" >> .env.production
       - echo "REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL" >> .env.production
