@@ -21,7 +21,7 @@ phases:
 
   build:
     commands:
-      - echo "=== PHASE 1: Backend Deployment ==="
+      - echo "=== PHASE 1 Backend Deployment ==="
       - echo "Deploying with SOURCE_EMAIL=$SOURCE_EMAIL and DESTINATION_EMAIL=$DESTINATION_EMAIL"
       - cdk deploy CrohnsColitisQBusinessStack --require-approval never --parameters sourceEmail=$SOURCE_EMAIL --parameters destinationEmail=$DESTINATION_EMAIL --outputs-file outputs.json
       - echo "=== Extracting API endpoints ==="
@@ -31,9 +31,9 @@ phases:
       - export EMAIL_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.EmailEndpoint // empty')
       - export CONVERSATION_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ConversationEndpoint // empty')
       - export QBUSINESS_APP_ID=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.QBusinessApplicationId // empty')
-      - echo "Chat API URL:$CHAT_API_URL"
-      - echo "Email API URL:$EMAIL_API_URL"
-      - echo "=== PHASE 2: Frontend Build ==="
+      - echo "Chat API URL $CHAT_API_URL"
+      - echo "Email API URL $EMAIL_API_URL"
+      - echo "=== PHASE 2 Frontend Build ==="
       - cd ../Frontend
       - echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env.production
       - echo "REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL" >> .env.production
@@ -50,8 +50,6 @@ phases:
       - echo "=== Deployment Complete ==="
       - echo "Backend deployed successfully"
       - echo "Frontend built successfully"
-      - echo "Chat API:$CHAT_API_URL"
-      - echo "Email API:$EMAIL_API_URL"
 
 artifacts:
   files:
