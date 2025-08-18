@@ -22,26 +22,18 @@ phases:
 
   build:
     commands:
-      - |
-        if [ "$ACTION" = "destroy" ]; then          
-          cdk destroy CrohnsColitisQBusinessStack --force
-        else
-          echo "=== PHASE 1: Backend Deployment ==="
-          cdk deploy CrohnsColitisQBusinessStack --require-approval never \
-            --parameters sourceEmail=$SOURCE_EMAIL \
-            --parameters destinationEmail=$DESTINATION_EMAIL \
-            --outputs-file outputs.json
-          
-          API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ApiEndpoint // empty')
-          CHAT_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ChatEndpoint // empty')
-          EMAIL_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.EmailEndpoint // empty')
-          CONVERSATION_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ConversationEndpoint // empty')
-          QBUSINESS_APP_ID=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.QBusinessApplicationId // empty')
-          
-          if [ -z "$API_URL" ] || [ -z "$CHAT_API_URL" ]; then
-            echo "Error: Could not extract required outputs from CDK deployment"
-            exit 1
-          fi
+      - echo "=== PHASE 1: Backend Deployment ==="
+      - echo "Deploying with SOURCE_EMAIL=$SOURCE_EMAIL and DESTINATION_EMAIL=$DESTINATION_EMAIL"
+      - cdk deploy CrohnsColitisQBusinessStack --require-approval never --parameters sourceEmail=$SOURCE_EMAIL --parameters destinationEmail=$DESTINATION_EMAIL --outputs-file outputs.json
+      - echo "=== Extracting API endpoints ==="
+      - cat outputs.json
+      - export API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ApiEndpoint // empty')
+      - export CHAT_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ChatEndpoint // empty')
+      - export EMAIL_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.EmailEndpoint // empty')
+      - export CONVERSATION_API_URL=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.ConversationEndpoint // empty')
+      - export QBUSINESS_APP_ID=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.QBusinessApplicationId // empty')
+      - echo "Chat API URL: $CHAT_API_URL"
+      - echo "Email API URL: $EMAIL_API_URL"
           
           echo "=== PHASE 2: Amplify App Setup ==="
           echo "Creating/updating Amplify app..."
