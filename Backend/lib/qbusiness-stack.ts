@@ -100,6 +100,20 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
+    // Q Business Retriever
+    const qBusinessRetriever = new cdk.CfnResource(this, 'QBusinessRetriever', {
+      type: 'AWS::QBusiness::Retriever',
+      properties: {
+        ApplicationId: qBusinessApp.ref,
+        DisplayName: `${projectName}-retriever`,
+        Type: 'NATIVE_INDEX',
+        Configuration: {
+          NativeIndexConfiguration: {
+            IndexId: qBusinessIndex.getAtt('IndexId'),
+          },
+        },
+      },
+    });
 
 
     // Web Crawler Role
@@ -149,20 +163,7 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
-    // Q Business Retriever
-    const qBusinessRetriever = new cdk.CfnResource(this, 'QBusinessRetriever', {
-      type: 'AWS::QBusiness::Retriever',
-      properties: {
-        ApplicationId: qBusinessApp.ref,
-        DisplayName: `${projectName}-retriever`,
-        Type: 'NATIVE_INDEX',
-        Configuration: {
-          NativeIndexConfiguration: {
-            IndexId: qBusinessIndex.getAtt('IndexId'),
-          },
-        },
-      },
-    });
+    
     console.log("📌 ApplicationId:", qBusinessApp.ref);
     console.log("📌 IndexId:", qBusinessIndex.getAtt('IndexId'));
     console.log("📌 WebCrawlerRole ARN:", webCrawlerRole.roleArn);
