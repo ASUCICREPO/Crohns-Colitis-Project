@@ -33,18 +33,35 @@ phases:
       - export QBUSINESS_APP_ID=$(cat outputs.json | jq -r '.CrohnsColitisQBusinessStack.QBusinessApplicationId // empty')
       - echo "Chat API URL $CHAT_API_URL"
       - echo "Email API URL $EMAIL_API_URL"
+      - echo "=== PHASE 2 Frontend Build ==="
+      - cd ../Frontend
+      - echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env.production
+      - echo "REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL" >> .env.production
+      - echo "REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL" >> .env.production
+      - echo "REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID" >> .env.production
+      - echo "REACT_APP_REGION=us-west-2" >> .env.production
+      - npm install --legacy-peer-deps
+      - npm install @csstools/normalize.css --legacy-peer-deps
+      - npm run build
+      - echo "Frontend build completed"
+      - cd build
+      - zip -r ../frontend-build.zip .
+      - cd ..
+      - ls -la frontend-build.zip
+      - cd ../Backend
 
   post_build:
     commands:
-      - echo "=== PHASE 2 Amplify App Setup ==="
+      - echo "=== PHASE 3 Amplify Deployment ==="
       - AMPLIFY_APP_NAME="crohns-colitis-app"
       - AMPLIFY_BRANCH_NAME="main"
       - echo "Creating Amplify app..."
-      - aws amplify create-app --name "$AMPLIFY_APP_NAME" --repository "https://github.com/ASUCICREPO/Crohns-Colitis-Project" --platform WEB > amplify-app.json || echo "App creation failed or already exists"
+      - aws amplify create-app --name "$AMPLIFY_APP_NAME" --platform WEB > amplify-app.json || echo "App creation failed or already exists"
       - AMPLIFY_APP_ID=$(aws amplify list-apps --query "apps[?name=='$AMPLIFY_APP_NAME'].appId" --output text)
       - echo "Amplify App ID $AMPLIFY_APP_ID"
       - aws amplify create-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" || echo "Branch may already exist"
-      - aws amplify update-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --environment-variables "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL,REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL,REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL,REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID,REACT_APP_REGION=us-west-2" || echo "Failed to update environment variables"
+      - echo "Deploying frontend build to Amplify..."
+      - aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "file://$PWD/../Frontend/frontend-build.zip"
       - echo "=== Deployment Complete ==="
       - echo "Backend deployed successfully"
       - echo "Frontend Amplify URL https://$AMPLIFY_BRANCH_NAME.$AMPLIFY_APP_ID.amplifyapp.com"
@@ -55,4 +72,5 @@ artifacts:
   files:
     - outputs.json
     - amplify-app.json
+    - Frontend/frontend-build.zip
   name: crohns-colitis-deployment
