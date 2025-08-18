@@ -7,9 +7,11 @@ phases:
       python: 3.11
     commands:
       - echo "Cloning public repo..."
-      - git clone https://github.com/ASUCICREPO/Crohns-Colitis-Project.git .
+      - git clone https://github.com/ASUCICREPO/Crohns-Colitis-Project.git /tmp/repo
+      - cp -r /tmp/repo/* .
       - echo "Installing AWS CDK CLI..."
       - npm install -g aws-cdk@2.161.1
+      - ls -la
       - cd Backend
       - npm install
 
