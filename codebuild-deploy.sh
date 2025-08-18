@@ -173,6 +173,14 @@ POLICY_DOC=$(cat <<EOF
         "translate:*"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "CDKAssumeRoleAccess",
+      "Effect": "Allow",
+      "Action": [
+        "sts:AssumeRole"
+      ],
+      "Resource": "arn:aws:iam::*:role/cdk-*"
     }
   ]
 }

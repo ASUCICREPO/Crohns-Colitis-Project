@@ -2,7 +2,7 @@ import React from "react";
 import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { LanguageProvider} from "./utils/LanguageContext";
-import LandingPage from "./components/LandingPage";
+import LandingPage from "./Components/LandingPage";
 import { useCookies } from "react-cookie";
 import { ALLOW_LANDING_PAGE } from "./utils/constants";
 import { TranscriptProvider } from './utils/TranscriptContext';
