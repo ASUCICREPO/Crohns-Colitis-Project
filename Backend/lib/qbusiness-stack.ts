@@ -109,18 +109,7 @@ export class QBusinessStack extends cdk.Stack {
         WebCrawlerPolicy: new iam.PolicyDocument({
           statements: [
             new iam.PolicyStatement({
-              actions: [
-                "qbusiness:BatchPutDocument", 
-                "qbusiness:BatchDeleteDocument",
-                "qbusiness:CreateDataSource",
-                "qbusiness:UpdateDataSource",
-                "qbusiness:DeleteDataSource",
-                "qbusiness:GetDataSource",
-                "qbusiness:ListDataSources",
-                "qbusiness:StartDataSourceSyncJob",
-                "qbusiness:StopDataSourceSyncJob",
-                "qbusiness:GetDataSourceSyncJob"
-              ],
+              actions: ["qbusiness:BatchPutDocument", "qbusiness:BatchDeleteDocument"],
               resources: ["*"],
             }),
           ],
@@ -136,7 +125,7 @@ export class QBusinessStack extends cdk.Stack {
         IndexId: qBusinessIndex.getAtt('IndexId'),
         DisplayName: 'WebCrawlerDataSource',
         RoleArn: webCrawlerRole.roleArn,
-        Type: 'WEB_CRAWLER',
+        Type: 'webcrawler',
         Configuration: {
           WebCrawlerConfiguration: {
             Urls: {
@@ -154,9 +143,7 @@ export class QBusinessStack extends cdk.Stack {
             CrawlAttachments: true,
             AuthenticationConfiguration: {
               AuthenticationType: 'NoAuthentication'
-            },
-            SiteMaps: [],
-            MaxUrlsPerMinuteCrawlRate: 300
+            }
           }
         }
       },
@@ -176,12 +163,6 @@ export class QBusinessStack extends cdk.Stack {
         },
       },
     });
-
-    // Add dependencies to ensure proper creation order
-    webCrawlerDataSource.addDependency(qBusinessApp);
-    webCrawlerDataSource.addDependency(qBusinessIndex);
-    qBusinessRetriever.addDependency(webCrawlerDataSource);
-
     console.log("📌 ApplicationId:", qBusinessApp.ref);
     console.log("📌 IndexId:", qBusinessIndex.getAtt('IndexId'));
     console.log("📌 WebCrawlerRole ARN:", webCrawlerRole.roleArn);
