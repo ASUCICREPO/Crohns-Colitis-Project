@@ -37,17 +37,17 @@ phases:
   post_build:
     commands:
       - echo "=== PHASE 2 Amplify App Setup ==="
-      - export AMPLIFY_APP_NAME="crohns-colitis-app"
-      - export AMPLIFY_BRANCH_NAME="main"
-      - echo "Creating Amplify app..."
+      - AMPLIFY_APP_NAME="crohns-colitis-app"
+      - AMPLIFY_BRANCH_NAME="main"
+      - echo "Creating Amplify app with environment variables..."
       - aws amplify create-app --name "$AMPLIFY_APP_NAME" --repository "https://github.com/ASUCICREPO/Crohns-Colitis-Project" --platform WEB --environment-variables "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL,REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL,REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL,REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID,REACT_APP_REGION=us-west-2" > amplify-app.json || echo "App may already exist"
-      - export AMPLIFY_APP_ID=$(aws amplify list-apps --query "apps[?name=='$AMPLIFY_APP_NAME'].appId" --output text)
+      - AMPLIFY_APP_ID=$(aws amplify list-apps --query "apps[?name=='$AMPLIFY_APP_NAME'].appId" --output text)
       - echo "Amplify App ID $AMPLIFY_APP_ID"
       - aws amplify create-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --environment-variables "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL,REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL,REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL,REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID,REACT_APP_REGION=us-west-2" || echo "Branch may already exist"
       - aws amplify start-build --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME"
       - echo "=== Deployment Complete ==="
       - echo "Backend deployed successfully"
-      - echo "Frontend Amplify app: https://$AMPLIFY_BRANCH_NAME.$AMPLIFY_APP_ID.amplifyapp.com"
+      - echo "Frontend Amplify URL https://$AMPLIFY_BRANCH_NAME.$AMPLIFY_APP_ID.amplifyapp.com"
       - echo "Chat API $CHAT_API_URL"
       - echo "Email API $EMAIL_API_URL"
 
