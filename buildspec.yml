@@ -40,21 +40,20 @@ phases:
       - ls -la
       - echo "Looking for Frontend directory..."
       - find . -name "*rontend*" -type d
-      - |
-        if [ -d "Frontend" ]; then
-          echo "Frontend directory found, building..."
-          cd Frontend
-          echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env
-          echo "REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL" >> .env
-          echo "REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL" >> .env
-          echo "REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID" >> .env
-          echo "REACT_APP_REGION=us-west-2" >> .env
-          npm install
-          npm run build
-        else
-          echo "Frontend directory not found, skipping frontend build"
-          echo "Backend deployment completed successfully"
-        fi
+      - echo "Frontend directory found, building..."
+      - cd Frontend
+      - echo "REACT_APP_CHAT_ENDPOINT=$CHAT_API_URL" > .env
+      - echo "REACT_APP_EMAIL_ENDPOINT=$EMAIL_API_URL" >> .env
+      - echo "REACT_APP_CONVERSATION_ENDPOINT=$CONVERSATION_API_URL" >> .env
+      - echo "REACT_APP_APPLICATION_ID=$QBUSINESS_APP_ID" >> .env
+      - echo "REACT_APP_REGION=us-west-2" >> .env
+      - echo "Installing frontend dependencies..."
+      - npm install
+      - echo "Building frontend..."
+      - npm run build
+      - echo "Frontend build completed"
+      - ls -la build/
+      - cd ..
       
   post_build:
     commands:
