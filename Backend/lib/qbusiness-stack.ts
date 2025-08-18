@@ -125,19 +125,26 @@ export class QBusinessStack extends cdk.Stack {
         IndexId: qBusinessIndex.getAtt('IndexId'),
         DisplayName: 'WebCrawlerDataSource',
         RoleArn: webCrawlerRole.roleArn,
+        Type: 'WEBCRAWLERV2',
         Configuration: {
-          Type: 'WEBCRAWLER',
-          Urls: [
-            'https://www.crohnscolitisfoundation.org/',
-            'https://gastro.org/',
-            'https://www.crohnscolitiscommunity.org/crohns-colitis-expert-qa'
-          ],
-          CrawlDepth: 3,
-          MaxLinksPerUrl: 100,
-          RateLimit: 300,
-          MaxFileSize: 50,
-          HonorRobots: true,
-          CrawlAttachments: true
+          WebCrawlerConfiguration: {
+            Urls: {
+              SeedUrls: [
+                'https://www.crohnscolitisfoundation.org/',
+                'https://gastro.org/',
+                'https://www.crohnscolitiscommunity.org/crohns-colitis-expert-qa'
+              ]
+            },
+            CrawlDepth: 3,
+            MaxLinksPerUrl: 100,
+            RateLimit: 300,
+            MaxFileSize: 50,
+            HonorRobots: true,
+            CrawlAttachments: true,
+            AuthenticationConfiguration: {
+              AuthenticationType: 'NoAuthentication'
+            }
+          }
         }
       },
     });
