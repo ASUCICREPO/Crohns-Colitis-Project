@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Card, CardContent, CardMedia, IconButton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import programsImage from '../assets/programs.jpeg';
-import researchImage from '../assets/research.jpeg';
-import supportGroupsImage from '../assets/support-groups.png';
+import programsImage from '../Assets/programs.jpeg';
+import researchImage from '../Assets/research.jpeg';
+import supportGroupsImage from '../Assets/support-groups.png';
 import { MARKETING_BUTTON_BACKGROUND } from '../utils/constants';
 const MarketingSidebar = ({ currentLanguage, onLanguageToggle }) => {
   const [eventsIndex, setEventsIndex] = useState(0);
