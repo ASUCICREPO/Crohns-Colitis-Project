@@ -139,8 +139,8 @@ export class QBusinessStack extends cdk.Stack {
         IndexId: qBusinessIndex.getAtt('IndexId'),
         DisplayName: 'WebCrawlerDataSource',
         RoleArn: webCrawlerRole.roleArn,
-        Type: 'WEBCRAWLER',
         Configuration: {
+            type: 'WEBCRAWLER',
             Urls: {
               SeedUrls: [
                 'https://www.crohnscolitisfoundation.org/',
