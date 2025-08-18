@@ -6,7 +6,7 @@ import LandingPage from "./Components/LandingPage";
 import { useCookies } from "react-cookie";
 import { ALLOW_LANDING_PAGE } from "./utils/constants";
 import { TranscriptProvider } from './utils/TranscriptContext';
-import FloatingChatWidget from './components/FloatingChatWidget';
+import FloatingChatWidget from './Components/FloatingChatWidget';
 
 function App() {
   const [cookies] = useCookies(['language']);
