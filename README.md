@@ -6,25 +6,28 @@ A conversational AI assistant built with AWS Q Business for Crohn's and Colitis 
 
 ```
 crohns-colitis-project/
-├── backend/                    # AWS CDK Infrastructure
+├── Backend/                    # AWS CDK Infrastructure
 │   ├── bin/                    # CDK entry points
 │   ├── lib/                    # CDK stacks
 │   ├── lambda/                 # Lambda functions
 │   ├── config/                 # Configuration
+│   ├── data-sources/           # Q Business data sources
 │   └── package.json            # Dependencies
-├── frontend/                   # React Widget
+├── Frontend/                   # React Widget
 │   ├── src/                    # Source code
+│   │   ├── Components/         # React components
+│   │   ├── services/           # API services
+│   │   ├── utils/              # Utilities
+│   │   └── Assets/             # Images & icons
 │   ├── public/                 # Static assets
 │   └── package.json            # Dependencies
 ├── scripts/                    # Deployment scripts
 │   ├── deploy.sh              # Main deployment
 │   ├── build-widget.sh        # Frontend build
 │   └── create-data-sources.sh # Data source setup
+├── docs/                       # Documentation
 ├── buildspec.yml              # AWS CodeBuild
-├── amplify.yml                # AWS Amplify
-├── import_q_business.py       # Q Business setup
-└── export_q_business.py       # Q Business export
-
+└── amplify.yml                # AWS Amplify
 ```
 
 ## 🚀 Quick Start
@@ -36,7 +39,7 @@ crohns-colitis-project/
 
 ### Deploy Backend
 ```bash
-cd backend
+cd Backend
 npm install
 cdk bootstrap
 cdk deploy
@@ -44,7 +47,7 @@ cdk deploy
 
 ### Deploy Frontend
 ```bash
-cd frontend
+cd Frontend
 npm install
 npm run build
 ```
@@ -72,21 +75,47 @@ export AWS_REGION="us-west-2"
 - **Conversation History** - DynamoDB storage
 - **Web Crawler** - Automatic content indexing
 
-## 🛠️ Development
+## 🏗️ AWS Services
+
+See [AWS Services Documentation](docs/AWS_SERVICES.md) for detailed information about:
+- Amazon Q Business (Conversational AI)
+- AWS Lambda (Serverless functions)
+- Amazon API Gateway (REST API)
+- Amazon DynamoDB (Session storage)
+- Amazon S3 (Static assets)
+- Amazon SES (Email service)
+- Amazon Translate (Multi-language)
+- AWS Amplify (Frontend hosting)
+- Amazon EventBridge (Event automation)
+- AWS IAM (Security & access control)
+
+## 📋 Technical Documentation
+
+See [Technical Documentation](docs/TECHNICAL_DOCUMENTATION.md) for comprehensive details on:
+- System architecture and component design
+- Implementation details and code examples
+- Security, performance, and scalability considerations
+- Deployment strategies and troubleshooting guides
+
+## 🛠️ Technology Stack
 
 ### Backend
 - AWS CDK with TypeScript
 - Lambda functions (Node.js)
 - Q Business, DynamoDB, API Gateway
+- Translation service integration
 
 ### Frontend
-- React with Vite
+- React 18 with Create React App
 - Material-UI components
-- Multi-language support
-
-## 📖 Documentation
-
-- API endpoints auto-generated
-- Q Business application configured
-- Web crawler for medical websites
+- Multi-language support (i18next)
 - Responsive chat widget
+
+## 📖 Production Features
+
+- Conversational AI with Q Business
+- Real-time translation service
+- Email collection for follow-ups
+- Conversation history storage
+- Cross-page chat persistence
+- Mobile-responsive design

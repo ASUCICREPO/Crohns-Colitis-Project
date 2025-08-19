@@ -43,7 +43,7 @@ window.DisabilityRightsChatWidget = {
     root.render(<EmbeddableWidget />);
     
     this.instance = { container, root };
-    console.log('Disability Rights Chat Widget initialized across domain');
+    console.log('Crohns-Colitis Project Chat Widget initialized across domain');
     
     return this.instance;
   },

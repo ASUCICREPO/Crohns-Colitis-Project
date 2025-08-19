@@ -24,7 +24,7 @@ const LandingPage = () => {
   return (
     <Box height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" p={4}>
       <Typography variant="h4" gutterBottom sx={{ color: '#004D77', mb: 4 }}>
-        Disability Rights Texas Chat
+        Crohns-Colitis Project Chat
       </Typography>
       <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
         <Typography variant="h5" gutterBottom>

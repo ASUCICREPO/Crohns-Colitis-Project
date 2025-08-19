@@ -8,21 +8,18 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.20",
     "@mui/material": "^5.15.18",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+
     "axios": "^1.7.2",
     "crypto-browserify": "^3.12.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "i18next": "^25.3.2",
-    "i18next-http-backend": "^3.0.2",
+
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "react": "^18.3.1",
     "react-cookie": "^7.1.4",
     "react-dom": "^18.3.1",
-    "react-i18next": "^15.6.1",
+
     "react-markdown": "^9.0.1",
     "react-scripts": "5.0.1",
     "react-world-flags": "^1.6.0",
@@ -31,9 +28,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "test-persistence": "npm run build && node test-server.js"
+    "eject": "react-scripts eject"
   },
   "devDependencies": {
     "fs-extra": "^11.1.1",

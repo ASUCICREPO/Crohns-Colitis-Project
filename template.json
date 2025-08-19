@@ -1,0 +1,440 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Crohns-Colitis Q Business Application Infrastructure",
+  "Parameters": {
+    "ProjectName": {
+      "Type": "String",
+      "Default": "crohns-colitis",
+      "Description": "Name of the project"
+    },
+    "SourceEmail": {
+      "Type": "String",
+      "Description": "Source email address for SES (must be verified)"
+    },
+    "DestinationEmail": {
+      "Type": "String",
+      "Description": "Destination email address for follow-up requests"
+    },
+    "Environment": {
+      "Type": "String",
+      "Default": "prod",
+      "AllowedValues": ["dev", "staging", "prod"],
+      "Description": "Environment name"
+    }
+  },
+  "Resources": {
+    "QBusinessApplication": {
+      "Type": "AWS::QBusiness::Application",
+      "Properties": {
+        "DisplayName": {
+          "Fn::Sub": "${ProjectName}-app"
+        },
+        "Description": "Crohns Colitis AI Assistant Q Business Application",
+        "RoleArn": {
+          "Fn::GetAtt": ["QBusinessApplicationRole", "Arn"]
+        },
+        "IdentityType": "ANONYMOUS"
+      }
+    },
+    "QBusinessIndex": {
+      "Type": "AWS::QBusiness::Index",
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "QBusinessApplication"
+        },
+        "DisplayName": {
+          "Fn::Sub": "${ProjectName}-index"
+        },
+        "Description": "Main index for Crohns Colitis content",
+        "Type": "STARTER",
+        "CapacityConfiguration": {
+          "Units": 1
+        }
+      }
+    },
+    "QBusinessRetriever": {
+      "Type": "AWS::QBusiness::Retriever",
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "QBusinessApplication"
+        },
+        "DisplayName": {
+          "Fn::Sub": "${ProjectName}-retriever"
+        },
+        "Type": "NATIVE_INDEX",
+        "Configuration": {
+          "NativeIndexConfiguration": {
+            "IndexId": {
+              "Fn::GetAtt": ["QBusinessIndex", "IndexId"]
+            }
+          }
+        }
+      }
+    },
+    "ConversationTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": {
+          "Fn::Sub": "${ProjectName}-conversations"
+        },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "sessionId",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "sessionId",
+            "KeyType": "HASH"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "TimeToLiveSpecification": {
+          "AttributeName": "ttl",
+          "Enabled": true
+        }
+      }
+    },
+    "DataSourceBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Sub": "${ProjectName}-data-${AWS::AccountId}-${AWS::Region}"
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      }
+    },
+    "FrontendBuildBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::Sub": "${ProjectName}-builds-${AWS::AccountId}-${AWS::Region}"
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "NotificationConfiguration": {
+          "EventBridgeConfiguration": {
+            "EventBridgeEnabled": true
+          }
+        }
+      }
+    },
+    "ChatAPI": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "${ProjectName}-api"
+        },
+        "Description": "Crohns Colitis Chatbot API",
+        "EndpointConfiguration": {
+          "Types": ["REGIONAL"]
+        }
+      }
+    },
+    "ChatLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${ProjectName}-chat"
+        },
+        "Runtime": "nodejs18.x",
+        "Handler": "index.handler",
+        "Code": {
+          "ZipFile": "exports.handler = async (event) => { return { statusCode: 200, body: 'Chat function placeholder' }; }"
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        },
+        "Timeout": 300,
+        "MemorySize": 256,
+        "Environment": {
+          "Variables": {
+            "QBUSINESS_APPLICATION_ID": {
+              "Ref": "QBusinessApplication"
+            },
+            "DYNAMODB_TABLE_NAME": {
+              "Ref": "ConversationTable"
+            }
+          }
+        }
+      }
+    },
+    "EmailLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${ProjectName}-email"
+        },
+        "Runtime": "nodejs18.x",
+        "Handler": "index.handler",
+        "Code": {
+          "ZipFile": "exports.handler = async (event) => { return { statusCode: 200, body: 'Email function placeholder' }; }"
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        },
+        "Timeout": 300,
+        "MemorySize": 256,
+        "Environment": {
+          "Variables": {
+            "SOURCE_EMAIL": {
+              "Ref": "SourceEmail"
+            },
+            "DESTINATION_EMAIL": {
+              "Ref": "DestinationEmail"
+            }
+          }
+        }
+      }
+    },
+    "TranslationLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${ProjectName}-translation"
+        },
+        "Runtime": "nodejs18.x",
+        "Handler": "index.handler",
+        "Code": {
+          "ZipFile": "exports.handler = async (event) => { return { statusCode: 200, body: 'Translation function placeholder' }; }"
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        },
+        "Timeout": 300,
+        "MemorySize": 256
+      }
+    },
+    "ConversationLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Sub": "${ProjectName}-conversation"
+        },
+        "Runtime": "nodejs18.x",
+        "Handler": "index.handler",
+        "Code": {
+          "ZipFile": "exports.handler = async (event) => { return { statusCode: 200, body: 'Conversation function placeholder' }; }"
+        },
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        },
+        "Timeout": 300,
+        "MemorySize": 256,
+        "Environment": {
+          "Variables": {
+            "DYNAMODB_TABLE_NAME": {
+              "Ref": "ConversationTable"
+            }
+          }
+        }
+      }
+    },
+    "QBusinessApplicationRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "qbusiness.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "aws:SourceAccount": {
+                    "Ref": "AWS::AccountId"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "QBusinessApplicationPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "cloudwatch:PutMetricData",
+                  "Resource": "*",
+                  "Condition": {
+                    "StringEquals": {
+                      "cloudwatch:namespace": "AWS/QBusiness"
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:DescribeLogGroups",
+                    "logs:CreateLogGroup",
+                    "logs:DescribeLogStreams",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/qbusiness/*"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "QBusinessFullAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "qbusiness:ChatSync",
+                    "qbusiness:Chat",
+                    "qbusiness:GetApplication",
+                    "qbusiness:ListApplications",
+                    "qbusiness:GetRetriever",
+                    "qbusiness:ListRetrievers",
+                    "qbusiness:GetIndex",
+                    "qbusiness:ListIndices"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ses:SendEmail",
+                    "ses:SendRawEmail"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "translate:TranslateText",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:Query",
+                    "dynamodb:Scan"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": ["ConversationTable", "Arn"]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "QBusinessApplicationId": {
+      "Description": "Q Business Application ID",
+      "Value": {
+        "Ref": "QBusinessApplication"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-QBusinessApplicationId"
+        }
+      }
+    },
+    "QBusinessIndexId": {
+      "Description": "Q Business Index ID",
+      "Value": {
+        "Fn::GetAtt": ["QBusinessIndex", "IndexId"]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-QBusinessIndexId"
+        }
+      }
+    },
+    "APIGatewayURL": {
+      "Description": "API Gateway URL",
+      "Value": {
+        "Fn::Sub": "https://${ChatAPI}.execute-api.${AWS::Region}.amazonaws.com/prod"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-APIGatewayURL"
+        }
+      }
+    },
+    "DynamoDBTableName": {
+      "Description": "DynamoDB table name for conversations",
+      "Value": {
+        "Ref": "ConversationTable"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-DynamoDBTableName"
+        }
+      }
+    },
+    "DataSourceBucketName": {
+      "Description": "S3 Data Source Bucket Name",
+      "Value": {
+        "Ref": "DataSourceBucket"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-DataSourceBucketName"
+        }
+      }
+    },
+    "FrontendBuildBucketName": {
+      "Description": "S3 Bucket for Frontend Build Artifacts",
+      "Value": {
+        "Ref": "FrontendBuildBucket"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-FrontendBuildBucketName"
+        }
+      }
+    }
+  }
+}

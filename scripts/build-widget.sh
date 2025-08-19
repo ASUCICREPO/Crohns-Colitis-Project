@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Build script for Disability Rights Texas Floating Chat Widget
-echo "🚀 Building Disability Rights Texas Floating Chat Widget..."
+# Build script for Crohns-Colitis Project Floating Chat Widget
+echo "🚀 Building Crohns-Colitis Project Floating Chat Widget..."
 
 # Navigate to frontend directory
 cd frontend
@@ -24,7 +24,7 @@ echo "📝 Creating widget integration files..."
 
 # Create a simple integration guide
 cat > ../widget-dist/INTEGRATION.md << 'EOF'
-# Disability Rights Texas Chat Widget Integration
+# Crohns-Colitis Project Chat Widget Integration
 
 ## Quick Start
 
