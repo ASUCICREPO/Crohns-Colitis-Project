@@ -181,14 +181,6 @@ POLICY_DOC=$(cat <<EOF
         "sts:AssumeRole"
       ],
       "Resource": "arn:aws:iam::*:role/cdk-*"
-    },
-    {
-      "Sid": "AmplifyAppDeployment",
-      "Effect": "Allow",
-      "Action": [
-        "amplify:*"
-      ],
-      "Resource": "*"
     }
   ]
 }
