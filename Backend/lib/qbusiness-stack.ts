@@ -56,6 +56,10 @@ export class QBusinessStack extends cdk.Stack {
               actions: ["logs:DescribeLogStreams", "logs:CreateLogStream", "logs:PutLogEvents"],
               resources: [`arn:aws:logs:${this.region}:${this.account}:log-group:/aws/qbusiness/*:log-stream:*`],
             }),
+            new iam.PolicyStatement({
+              actions: ["logs:DescribeLogGroups"],
+              resources: [`arn:aws:logs:${this.region}:${this.account}:log-group:*`],
+            }),
           ],
         }),
       },
