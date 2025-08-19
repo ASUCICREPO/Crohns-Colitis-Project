@@ -61,7 +61,7 @@ phases:
       - echo "Amplify App ID $AMPLIFY_APP_ID"
       - aws amplify create-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" || echo "Branch may already exist"
       - echo "Deploying frontend build to Amplify..."
-      - aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "file://$PWD/../Frontend/frontend-build.zip"
+      - aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "file://$PWD/../frontend/frontend-build.zip"
       - echo "=== Deployment Complete ==="
       - echo "Backend deployed successfully"
       - echo "Frontend Amplify URL https://$AMPLIFY_BRANCH_NAME.$AMPLIFY_APP_ID.amplifyapp.com"
