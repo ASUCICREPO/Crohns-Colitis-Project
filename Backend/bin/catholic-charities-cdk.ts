@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import "source-map-support/register"
 import * as cdk from "aws-cdk-lib"
-import { CrohnsColitisStack } from "../lib/catholic-charities-stack"
+import { CrohnsColitisStack } from "../lib/crohns-colitis-stack"
 
 const app = new cdk.App()
 
