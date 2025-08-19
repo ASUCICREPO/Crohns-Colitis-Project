@@ -60,8 +60,12 @@ phases:
       - AMPLIFY_APP_ID=$(cat amplify-app.json | jq -r '.app.appId')
       - echo "Amplify App ID $AMPLIFY_APP_ID"
       - aws amplify create-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" || echo "Branch may already exist"
+      - echo "Uploading frontend build to S3..."
+      - BUCKET_NAME="amplify-deploy-$(date +%s)"
+      - aws s3 mb s3://$BUCKET_NAME
+      - aws s3 cp ../frontend/frontend-build.zip s3://$BUCKET_NAME/frontend-build.zip
       - echo "Deploying frontend build to Amplify..."
-      - aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "file://$PWD/../frontend/frontend-build.zip"
+      - aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "s3://$BUCKET_NAME/frontend-build.zip"
       - echo "=== Deployment Complete ==="
       - echo "Backend deployed successfully"
       - echo "Frontend Amplify URL https://$AMPLIFY_BRANCH_NAME.$AMPLIFY_APP_ID.amplifyapp.com"
@@ -72,5 +76,5 @@ artifacts:
   files:
     - outputs.json
     - amplify-app.json
-    - Frontend/frontend-build.zip
+    - frontend/frontend-build.zip
   name: crohns-colitis-deployment
