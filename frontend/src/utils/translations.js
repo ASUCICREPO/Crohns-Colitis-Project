@@ -1,11 +1,3 @@
-import { useTranslation } from 'react-i18next';
-
-// Hook for using translations
-export const useAppTranslation = () => {
-  const { t, i18n } = useTranslation();
-  return { t, i18n };
-};
-
 // Get translation for current language, fallback to English
 export const getTranslation = (key, language = 'en') => {
   console.log('🔄 DEBUG - getTranslation called with key:', key, 'language:', language);
