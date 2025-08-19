@@ -55,6 +55,7 @@ function AmazonQChat({ isExpanded = false, onClose }) {
   const [hasShownWelcome, setHasShownWelcome] = useState(false);
   const [isLanguageRestart, setIsLanguageRestart] = useState(false);
   const [showIdlePrompt, setShowIdlePrompt] = useState(false);
+  const [idlePromptTimer, setIdlePromptTimer] = useState(null);
   const [sessionId] = useState(() => {
     console.log('🔄 DEBUG - AmazonQChat initializing sessionId...');
     const id = CookieUtils.getSessionId();
@@ -67,6 +68,15 @@ function AmazonQChat({ isExpanded = false, onClose }) {
   // Idle timer functionality
   const { startTimer, resetTimer, clearTimer } = useIdleTimer(() => {
     setShowIdlePrompt(true);
+    
+    // Start 25-second timer for automatic closure if no response
+    const autoCloseTimer = setTimeout(() => {
+      if (showIdlePrompt) {
+        handleIdleClose();
+      }
+    }, 25000);
+    
+    setIdlePromptTimer(autoCloseTimer);
   }, 20000);
   
   // Add a function to add messages from other components
@@ -443,20 +453,62 @@ function AmazonQChat({ isExpanded = false, onClose }) {
   
   const handleIdleContinue = () => {
     setShowIdlePrompt(false);
+    
+    // Clear the auto-close timer
+    if (idlePromptTimer) {
+      clearTimeout(idlePromptTimer);
+      setIdlePromptTimer(null);
+    }
+    
+    // Add bot response for "Yes" selection
+    const yesResponseMessage = createMessageBlock(
+      getTranslation('idleYesResponse', currentLanguage),
+      "BOT",
+      "TEXT",
+      "RECEIVED"
+    );
+    
+    setMessageList(prevList => [...prevList, yesResponseMessage]);
     startTimer();
   };
   
   const handleIdleClose = () => {
-    clearTimer();
-    if (onClose) {
-      onClose();
+    setShowIdlePrompt(false);
+    
+    // Clear the auto-close timer
+    if (idlePromptTimer) {
+      clearTimeout(idlePromptTimer);
+      setIdlePromptTimer(null);
     }
+    
+    // Add goodbye message for "No" selection
+    const noResponseMessage = createMessageBlock(
+      getTranslation('idleNoResponse', currentLanguage),
+      "BOT",
+      "TEXT",
+      "RECEIVED"
+    );
+    
+    setMessageList(prevList => [...prevList, noResponseMessage]);
+    
+    // Close chat after showing goodbye message
+    setTimeout(() => {
+      clearTimer();
+      if (onClose) {
+        onClose();
+      }
+    }, 15000);
   };
   
-  // Cleanup timer on unmount
+  // Cleanup timers on unmount
   useEffect(() => {
-    return () => clearTimer();
-  }, [clearTimer]);
+    return () => {
+      clearTimer();
+      if (idlePromptTimer) {
+        clearTimeout(idlePromptTimer);
+      }
+    };
+  }, [clearTimer, idlePromptTimer]);
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="space-between" className="appHeight100 appWidth100">
