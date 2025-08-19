@@ -181,6 +181,14 @@ POLICY_DOC=$(cat <<EOF
         "sts:AssumeRole"
       ],
       "Resource": "arn:aws:iam::*:role/cdk-*"
+    },
+    {
+      "Sid": "AmplifyAppDeployment",
+      "Effect": "Allow",
+      "Action": [
+        "amplify:*"
+      ],
+      "Resource": "*"
     }
   ]
 }
@@ -276,7 +284,9 @@ ENV_VARS=$(cat <<EOF
   {"name": "AWS_REGION", "value": "$AWS_REGION", "type": "PLAINTEXT"},
   {"name": "ACTION", "value": "$ACTION", "type": "PLAINTEXT"},
   {"name": "SOURCE_EMAIL", "value": "${SOURCE_EMAIL:-admin@example.com}", "type": "PLAINTEXT"},
-  {"name": "DESTINATION_EMAIL", "value": "${DESTINATION_EMAIL:-support@example.com}", "type": "PLAINTEXT"}
+  {"name": "DESTINATION_EMAIL", "value": "${DESTINATION_EMAIL:-support@example.com}", "type": "PLAINTEXT"},
+  {"name": "AMPLIFY_APP_NAME", "value": "crohns-colitis-app", "type": "PLAINTEXT"},
+  {"name": "AMPLIFY_BRANCH_NAME", "value": "main", "type": "PLAINTEXT"}
 ]
 EOF
 )

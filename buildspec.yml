@@ -63,7 +63,7 @@ phases:
       - echo "Uploading frontend build to S3..."
       - BUCKET_NAME="amplify-deploy-$(date +%s)"
       - aws s3 mb s3://$BUCKET_NAME
-      - aws s3 cp ../frontend/frontend-build.zip s3://$BUCKET_NAME/frontend-build.zip --acl public-read
+      - aws s3 cp ../frontend/frontend-build.zip s3://$BUCKET_NAME/frontend-build.zip
       - aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy '{"Version":"2012-10-17","Statement":[{"Sid":"PublicReadGetObject","Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::'$BUCKET_NAME'/*"}]}'
       - echo "Deploying frontend build to Amplify..."
       - aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "https://$BUCKET_NAME.s3.amazonaws.com/frontend-build.zip"
