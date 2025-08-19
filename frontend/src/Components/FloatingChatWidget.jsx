@@ -355,7 +355,7 @@ const FloatingChatWidget = () => {
                 </Box>
               )}
               <Box sx={{ flex: 1, minHeight: 0 }}>
-                <AmazonQChat isExpanded={isExpanded} />
+                <AmazonQChat isExpanded={isExpanded} onClose={toggleChat} />
               </Box>
             </Box>
           </Box>

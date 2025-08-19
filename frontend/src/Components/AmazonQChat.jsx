@@ -10,6 +10,8 @@ import CONFIG from "../config";
 import { useLanguage } from "../utils/LanguageContext";
 import { TEXT } from "../utils/constants";
 import { getTranslation } from "../utils/translations";
+import useIdleTimer from "../utils/useIdleTimer";
+import IdlePrompt from "./IdlePrompt";
 
 import BotResponse from "./BotResponse";
 
@@ -45,13 +47,14 @@ try {
 
 // Debug logging is controlled in config.js
 
-function AmazonQChat({ isExpanded = false }) {
+function AmazonQChat({ isExpanded = false, onClose }) {
   const [messageList, setMessageList] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [conversationId, setConversationId] = useState(null);
   const [lastSystemMessageId, setLastSystemMessageId] = useState(null);
   const [hasShownWelcome, setHasShownWelcome] = useState(false);
   const [isLanguageRestart, setIsLanguageRestart] = useState(false);
+  const [showIdlePrompt, setShowIdlePrompt] = useState(false);
   const [sessionId] = useState(() => {
     console.log('🔄 DEBUG - AmazonQChat initializing sessionId...');
     const id = CookieUtils.getSessionId();
@@ -60,6 +63,11 @@ function AmazonQChat({ isExpanded = false }) {
   });
   const messagesEndRef = useRef(null);
   const { currentLanguage, setCurrentLanguage } = useLanguage();
+  
+  // Idle timer functionality
+  const { startTimer, resetTimer, clearTimer } = useIdleTimer(() => {
+    setShowIdlePrompt(true);
+  }, 20000);
   
   // Add a function to add messages from other components
   const addMessageToList = (message) => {
@@ -251,6 +259,10 @@ function AmazonQChat({ isExpanded = false }) {
     console.log(`Sending message in ${currentLanguage}:`, inputText);
     setProcessing(true);
     
+    // Reset idle timer when user sends message
+    resetTimer();
+    setShowIdlePrompt(false);
+    
     // Check if this is a language selection
     const isLanguageSelection = inputText.toLowerCase().match(/^(english|spanish|español|1|2)$/);
     
@@ -412,6 +424,9 @@ function AmazonQChat({ isExpanded = false }) {
         return newList;
       });
       
+      // Start idle timer after bot response
+      startTimer();
+      
     } catch (error) {
       console.error("Error in chat interaction:", error);
       const errorMessage = createMessageBlock(
@@ -425,6 +440,23 @@ function AmazonQChat({ isExpanded = false }) {
       setProcessing(false);
     }
   };
+  
+  const handleIdleContinue = () => {
+    setShowIdlePrompt(false);
+    startTimer();
+  };
+  
+  const handleIdleClose = () => {
+    clearTimer();
+    if (onClose) {
+      onClose();
+    }
+  };
+  
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => clearTimer();
+  }, [clearTimer]);
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="space-between" className="appHeight100 appWidth100">
@@ -474,6 +506,13 @@ function AmazonQChat({ isExpanded = false }) {
               </Box>
             );
           })
+        )}
+        {showIdlePrompt && (
+          <IdlePrompt
+            language={currentLanguage}
+            onContinue={handleIdleContinue}
+            onClose={handleIdleClose}
+          />
         )}
         {processing && (
           <Box mb={2}>
