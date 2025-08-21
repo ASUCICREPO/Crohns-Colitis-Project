@@ -125,9 +125,19 @@ export class QBusinessStack extends cdk.Stack {
     // Web Crawler Data Sources
     const webCrawlerRole = new iam.Role(this, "WebCrawlerRole", {
       assumedBy: new iam.ServicePrincipal("qbusiness.amazonaws.com"),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonQBusinessWebCrawlerServiceRolePolicy')
-      ]
+      inlinePolicies: {
+        WebCrawlerPolicy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: [
+                "qbusiness:BatchPutDocument",
+                "qbusiness:BatchDeleteDocument"
+              ],
+              resources: ["*"]
+            })
+          ]
+        })
+      }
     });
 
     // Data source URLs
