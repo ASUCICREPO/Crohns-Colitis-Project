@@ -299,7 +299,7 @@ const BotResponse = ({ message, citations = [], state = "RECEIVED", confidenceSc
 
   return (
     <Grid container direction="row" justifyContent="flex-start" alignItems="flex-end">
-      <Grid item>
+      <Grid item sx={{ mr: 1, ml: 2 }}>
         <Avatar alt="Bot Avatar" src={BotAvatar} />
       </Grid>
       <Grid item className="botMessage" sx={{ 
