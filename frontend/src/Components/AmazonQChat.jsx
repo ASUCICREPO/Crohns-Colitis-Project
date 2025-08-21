@@ -570,7 +570,7 @@ function AmazonQChat({ isExpanded = false, onClose }) {
           <Box mb={2}>
             <Grid container direction="row" justifyContent="flex-start" alignItems="flex-end">
               <Grid item>
-                <Avatar src={BotAvatar} sx={{ width: 40, height: 40 }} />
+                <Avatar src={BotAvatar} sx={{ width: 40, height: 40, ml: 2 }} />
               </Grid>
               <Grid item className="botMessage" sx={{ backgroundColor: (theme) => theme.palette.background.botMessage, ml: 1 }}>
                 <Box display="flex" alignItems="center" gap={1}>
@@ -620,7 +620,7 @@ function UserMessage({ message }) {
         <div>{message}</div>
       </Grid>
       <Grid item>
-        <Avatar alt={"User Profile Pic"} src={UserAvatar} />
+        <Avatar alt={"User Profile Pic"} src={UserAvatar} sx={{ mr: 2 }} />
       </Grid>
     </Grid>
   );

@@ -173,10 +173,7 @@ export class QBusinessStack extends cdk.Stack {
             }
           },
           RoleArn: webCrawlerRole.roleArn,
-          SyncSchedule: {
-            schedule: 'rate(7 days)',
-            startTime: new Date().toISOString()
-          }
+          SyncSchedule: 'rate(7 days)'
         }
       });
     });
