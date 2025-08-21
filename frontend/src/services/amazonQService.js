@@ -96,6 +96,7 @@ class AmazonQService {
           "I'm not confident in this answer. Would you like to share your email for a follow-up?",
           "I'm not completely confident in this answer. Would you like a human expert to follow up?",
           "No estoy completamente seguro de esta respuesta. ¿Te gustaría que un experto humano te haga seguimiento?",
+          "I apologize; I am not able to answer this question. Would you like to be connected to someone in our Help Center?",
           "I'm not confident in this answer",
           "Would you like to share your email for a follow-up",
           "Would you like a human expert to follow up",
@@ -141,16 +142,19 @@ class AmazonQService {
       this.lastSystemMessageId = data.systemMessageId || '';
       this.lastConversationId = data.conversationId || '';
       
-      // Check if the response is "No answer is found" (case-insensitive)
-      const isNoAnswerFound = data.systemMessage && 
-        data.systemMessage.toLowerCase().includes("no answer is found");
+      // Check if the response is "No answer is found" or other low confidence messages (case-insensitive)
+      const isNoAnswerFound = data.systemMessage && (
+        data.systemMessage.toLowerCase().includes("no answer is found") ||
+        data.systemMessage.toLowerCase().includes("i apologize; i am not able to answer this question") ||
+        data.systemMessage.toLowerCase().includes("would you like to be connected to someone in our help center")
+      );
       
       // If it's a no-answer response, replace with custom message but preserve confidence score
       if (isNoAnswerFound) {
         console.log('No answer found - replacing message and clearing sources');
         data.systemMessage = language === 'ES' 
-          ? "Lo siento, pero no encuentro información relacionada con su solicitud. ¿Podría reformular su pregunta o darme más contexto para poder ayudarle mejor?"
-          : "I'm sorry, but I'm not finding any information related to your request. Could you please rephrase your question or give me additional context so I can help you more effectively?";
+          ? "Me disculpo; no puedo responder esta pregunta. ¿Te gustaría conectarte con alguien de nuestro Centro de Ayuda?"
+          : "I apologize; I am not able to answer this question. Would you like to be connected to someone in our Help Center?";
         data.sourceAttributions = []; // Clear any source attributions
         data.isNoAnswerFound = true;
         // Ensure low confidence for no-answer responses
