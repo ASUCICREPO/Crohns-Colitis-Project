@@ -122,85 +122,64 @@ export class QBusinessStack extends cdk.Stack {
     });
 
 
-    // Minimal S3 bucket for web crawler (required by AWS Q Business)
-    // const webCrawlerBucket = new s3.Bucket(this, 'WebCrawlerBucket', {
-    //   removalPolicy: cdk.RemovalPolicy.DESTROY,
-    //   autoDeleteObjects: true,
-    //   lifecycleRules: [{
-    //     id: 'DeleteTempFiles',
-    //     expiration: cdk.Duration.days(1),
-    //   }]
-    // });
+    // Web Crawler Data Sources
+    const webCrawlerRole = new iam.Role(this, "WebCrawlerRole", {
+      assumedBy: new iam.ServicePrincipal("qbusiness.amazonaws.com"),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonQBusinessWebCrawlerServiceRolePolicy')
+      ]
+    });
 
-    // // Updated web crawler role with minimal S3 permissions
-    // const webCrawlerRole = new iam.Role(this, "WebCrawlerRole", {
-    //   assumedBy: new iam.ServicePrincipal("qbusiness.amazonaws.com"),
-    //   inlinePolicies: {
-    //     WebCrawlerPolicy: new iam.PolicyDocument({
-    //       statements: [
-    //         new iam.PolicyStatement({
-    //           actions: [
-    //             "qbusiness:BatchPutDocument", 
-    //             "qbusiness:BatchDeleteDocument"
-    //           ],
-    //           resources: ["*"],
-    //         }),
-    //         new iam.PolicyStatement({
-    //           actions: [
-    //             "s3:GetObject",
-    //             "s3:PutObject",
-    //             "s3:DeleteObject",
-    //             "s3:ListBucket"
-    //           ],
-    //           resources: [
-    //             webCrawlerBucket.bucketArn,
-    //             `${webCrawlerBucket.bucketArn}/*`
-    //           ],
-    //         }),
-    //       ],
-    //     }),
-    //   },
-    // });
+    // Data source URLs
+    const dataSources = [
+      {
+        name: 'crohns-colitis-foundation',
+        url: 'https://www.crohnscolitisfoundation.org/'
+      },
+      {
+        name: 'gastro-org', 
+        url: 'https://gastro.org/'
+      },
+      {
+        name: 'crohns-colitis-community',
+        url: 'https://www.crohnscolitiscommunity.org/crohns-colitis-expert-qa'
+      }
+    ];
 
-    // // Simple web crawler configuration for your 3 URLs
-    // const webCrawlerDataSource = new cdk.CfnResource(this, 'WebCrawlerDataSource', {
-    //   type: 'AWS::QBusiness::DataSource',
-    //   properties: {
-    //     ApplicationId: qBusinessApp.ref,
-    //     IndexId: qBusinessIndex.getAtt('IndexId'),
-    //     DisplayName: 'WebCrawlerDataSource',
-    //     RoleArn: webCrawlerRole.roleArn,
-    //     Configuration: {
-    //       connectionConfiguration: {
-    //         repositoryEndpointMetadata: {
-    //           BucketName: webCrawlerBucket.bucketName
-    //         }
-    //       },
-    //       repositoryConfigurations: {
-    //         webCrawler: {
-    //           urlConfiguration: {
-    //             seedUrls: [
-    //               'https://www.crohnscolitisfoundation.org/',
-    //               'https://gastro.org/',
-    //               'https://www.crohnscolitiscommunity.org/crohns-colitis-expert-qa'
-    //             ]
-    //           },
-    //           crawlConfiguration: {
-    //             crawlDepth: 2,
-    //             maxLinksPerUrl: 50,
-    //             maxContentSizePerPageInMegaBytes: 10,
-    //             maxUrlsPerMinuteCrawlRate: 100,
-    //             respectRobotsTxt: true
-    //           }
-    //         }
-    //       },
-    //       syncConfiguration: {
-    //         syncMode: 'FULL_CRAWL'
-    //       },
-    //       type: 'WEBCRAWLER'
-    //     }
-    //   },
-    // });
+    // Create data sources
+    const webCrawlerDataSources = dataSources.map((source, index) => {
+      return new cdk.CfnResource(this, `WebCrawlerDataSource${index + 1}`, {
+        type: 'AWS::QBusiness::DataSource',
+        properties: {
+          ApplicationId: qBusinessApp.ref,
+          IndexId: qBusinessIndex.getAtt('IndexId'),
+          DisplayName: source.name,
+          Type: 'WEBCRAWLER',
+          Configuration: {
+            webCrawlerConfiguration: {
+              urls: {
+                seedUrlConfiguration: {
+                  seedUrls: [source.url]
+                }
+              },
+              crawlDepth: 3,
+              maxLinksPerPage: 100,
+              maxContentSizePerPageInMegaBytes: 50,
+              maxUrlsPerMinuteCrawlRate: 300,
+              urlInclusionPatterns: [],
+              urlExclusionPatterns: [],
+              proxyConfiguration: {},
+              authenticationConfiguration: {}
+            }
+          },
+          RoleArn: webCrawlerRole.roleArn,
+          SyncSchedule: {
+            schedule: 'rate(7 days)',
+            startTime: new Date().toISOString()
+          }
+        }
+      });
+    });
 
     
     console.log("📌 ApplicationId:", qBusinessApp.ref);
@@ -363,10 +342,13 @@ export class QBusinessStack extends cdk.Stack {
       description: 'Q Business Index ID',
     });
 
-    // new cdk.CfnOutput(this, 'QBusinessDataSourceId', {
-    //   value: webCrawlerDataSource.ref,
-    //   description: 'Q Business Data Source ID',
-    // });
+    // Output data source IDs
+    webCrawlerDataSources.forEach((dataSource, index) => {
+      new cdk.CfnOutput(this, `QBusinessDataSource${index + 1}Id`, {
+        value: dataSource.ref,
+        description: `Q Business Data Source ${index + 1} ID`
+      });
+    });
 
     new cdk.CfnOutput(this, 'QBusinessRetrieverId', {
       value: qBusinessRetriever.ref,
