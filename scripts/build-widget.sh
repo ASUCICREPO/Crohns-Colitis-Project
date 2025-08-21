@@ -34,15 +34,6 @@ Add this script tag to your website before the closing `</body>` tag:
 <script src="./static/js/widget.js" data-auto-init="true"></script>
 ```
 
-## Manual Initialization
-
-```html
-<script src="./static/js/widget.js"></script>
-<script>
-  DisabilityRightsChatWidget.init();
-</script>
-```
-
 ## Features
 
 - Floating chat button in bottom-right corner
