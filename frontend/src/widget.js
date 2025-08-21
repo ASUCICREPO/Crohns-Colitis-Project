@@ -21,10 +21,10 @@ window.addEventListener('storage', (e) => {
 });
 
 // Widget initialization function
-window.DisabilityRightsChatWidget = {
+window.CrohnsColitsWidget = {
   instance: null,
   
-  init: function(containerId = 'disability-rights-chat-widget') {
+  init: function(containerId = 'crohns-colitis-chat-widget') {
     // Prevent multiple instances
     if (this.instance) {
       console.log('Widget already initialized');
@@ -62,7 +62,7 @@ window.DisabilityRightsChatWidget = {
 // Cross-page persistence handler
 function handlePageNavigation() {
   // Preserve widget state across page navigations
-  if (window.DisabilityRightsChatWidget.instance) {
+  if (window.CrohnsColitsWidget.instance) {
     console.log('🔄 Page navigation detected, preserving widget state');
   }
 }
@@ -75,19 +75,19 @@ window.addEventListener('pagehide', handlePageNavigation);
 if (document.currentScript && document.currentScript.getAttribute('data-auto-init') === 'true') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      window.DisabilityRightsChatWidget.init();
+      window.CrohnsColitsWidget.init();
     });
   } else {
-    window.DisabilityRightsChatWidget.init();
+    window.CrohnsColitsWidget.init();
   }
 }
 
 // Re-initialize on page load if needed (for SPA navigation)
 window.addEventListener('load', () => {
-  if (!window.DisabilityRightsChatWidget.instance) {
+  if (!window.CrohnsColitsWidget.instance) {
     const autoInit = document.querySelector('script[data-auto-init="true"]');
     if (autoInit) {
-      window.DisabilityRightsChatWidget.init();
+      window.CrohnsColitsWidget.init();
     }
   }
 });
