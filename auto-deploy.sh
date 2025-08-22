@@ -16,8 +16,8 @@ fi
 if [ "$ACTION" = "deploy" ]; then
     read -p "Enter source email (verified in SES): " SOURCE_EMAIL
     read -p "Enter destination email: " DESTINATION_EMAIL
-    read -p "Enter AWS region [us-west-2]: " AWS_REGION
-    AWS_REGION=${AWS_REGION:-us-west-2}
+    read -p "Enter AWS region [us-east-1]: " AWS_REGION
+    AWS_REGION=${AWS_REGION:-us-east-1}
 fi
 
 if [ "$ACTION" = "destroy" ]; then
