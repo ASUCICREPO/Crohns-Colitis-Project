@@ -11,7 +11,7 @@ Step-by-step instructions using only the AWS Console interface.
 1. Go to **AWS Console** → **S3**
 2. Click **Create bucket**
 3. Enter bucket name: `your-qbusiness-documents`
-4. Select region: `us-east-1`
+4. Select region: `us-west-2`
 5. Click **Create bucket**
 6. Click on your bucket → **Upload**
 7. Drag and drop your documents (PDF, DOC, TXT, etc.)

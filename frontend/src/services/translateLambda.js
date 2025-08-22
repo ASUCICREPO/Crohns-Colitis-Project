@@ -4,7 +4,7 @@
 const AWS = require('aws-sdk');
 
 const translate = new AWS.Translate({
-  region: process.env.AWS_REGION || 'us-east-1'
+  region: process.env.AWS_REGION || 'us-west-2'
 });
 
 exports.handler = async (event) => {

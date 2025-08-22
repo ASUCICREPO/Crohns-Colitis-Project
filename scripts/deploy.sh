@@ -20,8 +20,8 @@ if [ -z "${PROJECT_NAME:-}" ]; then
 fi
 
 if [ -z "${AWS_REGION:-}" ]; then
-    read -rp "Enter AWS region [default: us-east-1]: " AWS_REGION
-    AWS_REGION=${AWS_REGION:-us-east-1}
+    read -rp "Enter AWS region [default: us-west-2]: " AWS_REGION
+    AWS_REGION=${AWS_REGION:-us-west-2}
 fi
 
 if [ -z "${GITHUB_URL:-}" ]; then
@@ -154,7 +154,7 @@ REACT_APP_EMAIL_API_URL=$EMAIL_API_URL
 REACT_APP_CONVERSATION_API_URL=$CONVERSATION_API_URL
 REACT_APP_TRANSLATE_API_URL=$TRANSLATE_API_URL
 REACT_APP_QBUSINESS_APPLICATION_ID=$QBUSINESS_APP_ID
-REACT_APP_AWS_REGION=us-east-1
+REACT_APP_AWS_REGION=us-west-2
 EOF
 
 echo "Frontend environment configured"

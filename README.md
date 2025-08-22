@@ -64,7 +64,7 @@ Set environment variables:
 ```bash
 export SOURCE_EMAIL="your-email@domain.com"
 export DESTINATION_EMAIL="support@domain.com"
-export AWS_REGION="us-east-1"
+export AWS_REGION="us-west-2"
 ```
 
 ## 📚 Features

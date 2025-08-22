@@ -1,6 +1,6 @@
 export const config = {
   aws: {
-    region: 'us-east-1',
+    region: 'us-west-2',
   },
   qbusiness: {
     applicationId: process.env.QBUSINESS_APPLICATION_ID || '',

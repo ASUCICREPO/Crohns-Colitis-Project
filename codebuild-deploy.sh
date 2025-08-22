@@ -29,8 +29,8 @@ if [ -z "${PROJECT_NAME:-}" ]; then
 fi
 
 if [ -z "${AWS_REGION:-}" ]; then
-  read -rp "Enter AWS region [default: us-east-1]: " AWS_REGION
-  AWS_REGION=${AWS_REGION:-us-east-1}
+  read -rp "Enter AWS region [default: us-west-2]: " AWS_REGION
+  AWS_REGION=${AWS_REGION:-us-west-2}
 fi
 
 if [ -z "${AWS_ACCOUNT_ID:-}" ]; then
