@@ -180,7 +180,7 @@ User Request → API Gateway → Lambda Functions → AWS Services
 
 ## Regional Considerations
 
-- **Primary Region**: us-west-2 (configurable)
+- **Primary Region**: us-east-1 (configurable)
 - **Multi-AZ**: Automatic for managed services
 - **Global Services**: CloudFront (via Amplify), Route 53 (if custom domain)
 
