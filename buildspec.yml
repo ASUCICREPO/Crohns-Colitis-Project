@@ -23,6 +23,12 @@ phases:
     commands:
       - echo "=== PHASE 1 Backend Deployment ==="
       - echo "Deploying with SOURCE_EMAIL=$SOURCE_EMAIL and DESTINATION_EMAIL=$DESTINATION_EMAIL"
+      - |
+        if aws cloudformation describe-stacks --stack-name CrohnsColitisQBusinessStack --region $AWS_REGION >/dev/null 2>&1; then
+          echo "Stack exists - updating existing stack..."
+        else
+          echo "Stack does not exist - creating new stack..."
+        fi
       - cdk deploy CrohnsColitisQBusinessStack --require-approval never --parameters sourceEmail=$SOURCE_EMAIL --parameters destinationEmail=$DESTINATION_EMAIL --outputs-file outputs.json
       - echo "=== Extracting API endpoints ==="
       - cat outputs.json

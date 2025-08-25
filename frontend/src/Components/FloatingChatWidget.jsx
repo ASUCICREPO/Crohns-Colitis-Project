@@ -126,7 +126,8 @@ const FloatingChatWidget = () => {
             position: 'fixed',
             bottom: 20,
             right: 20,
-            zIndex: 9999,
+            zIndex: 1000,
+            pointerEvents: 'auto',
             width: { xs: 64, sm: 72 },
             height: { xs: 64, sm: 72 },
             backgroundColor: '#004D77',
@@ -160,6 +161,7 @@ const FloatingChatWidget = () => {
             bottom: 20,
             right: 20,
             zIndex: 1000,
+            pointerEvents: 'auto',
             width: isMobile 
               ? 'calc(100vw - 40px)'
               : isExpanded 
