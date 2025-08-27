@@ -8,11 +8,24 @@ Frontend/build/
 Frontend/dist/
 *.tgz
 
-# Environment files
+# Environment files - API endpoints and secrets
 .env
+.env.*
 .env.local
 .env.production
 .env.development
+.env.example
+
+# API Configuration files
+Frontend/.env*
+Backend/.env*
+**/config/api-endpoints.js
+**/config/environment.ts
+
+# AWS Configuration
+outputs.json
+aws-exports.js
+amplify-app.json
 
 # IDE files
 .vscode/
