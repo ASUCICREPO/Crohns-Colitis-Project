@@ -84,6 +84,29 @@ exports.handler = async (event) => {
       }
     }
     
+    // Filter citations - only show website links, hide S3 document files
+    let filteredSourceAttributions = [];
+    if (response.sourceAttributions && response.sourceAttributions.length > 0) {
+      filteredSourceAttributions = response.sourceAttributions.filter(source => {
+        const url = source.url || '';
+        const title = source.title || '';
+        
+        // Hide S3 document files (contains s3:// or amazonaws.com)
+        const isS3Document = url.includes('s3://') || 
+                            url.includes('amazonaws.com') ||
+                            url.includes('s3.') ||
+                            /\.(docx?|pdf|txt|rtf|pptx?)$/i.test(url) || 
+                            /\.(docx?|pdf|txt|rtf|pptx?)$/i.test(title);
+        
+        // Show only website URLs (http/https but not S3)
+        const isWebsiteUrl = (url.startsWith('http://') || url.startsWith('https://')) && 
+                            !url.includes('amazonaws.com') && 
+                            !url.includes('s3.');
+        
+        return !isS3Document && isWebsiteUrl;
+      });
+    }
+    
     // Calculate confidence score
     let confidenceScore = 100;
     const systemMessage = response.systemMessage || '';
@@ -107,7 +130,11 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({ ...response, confidenceScore })
+      body: JSON.stringify({ 
+        ...response, 
+        sourceAttributions: filteredSourceAttributions,
+        confidenceScore 
+      })
     };
   } catch (error) {
     console.error('Error:', error);
