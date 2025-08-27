@@ -6,8 +6,8 @@ export const config = {
     applicationId: process.env.QBUSINESS_APPLICATION_ID || '',
   },
   email: {
-    sourceEmail: process.env.SOURCE_EMAIL || 'rajuhemanth456@gmail.com',
-    destinationEmail: process.env.DESTINATION_EMAIL || 'hkoneti@asu.edu',
+    sourceEmail: process.env.SOURCE_EMAIL,
+    destinationEmail: process.env.DESTINATION_EMAIL,
   },
   dynamodb: {
     tableName: `CrohnsColitisChat-${Date.now()}`,

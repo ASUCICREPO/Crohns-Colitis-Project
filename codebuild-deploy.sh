@@ -29,6 +29,11 @@ if [ -z "${PROJECT_NAME:-}" ]; then
 fi
 
 if [ -z "${AWS_REGION:-}" ]; then
+  echo "Available regions:"
+  echo "  1) us-east-1 (N. Virginia)"
+  echo "  2) us-west-2 (Oregon)"
+  echo "  3) eu-west-1 (Ireland)"
+  echo "  4) ap-southeast-1 (Singapore)"
   read -rp "Enter AWS region [default: us-west-2]: " AWS_REGION
   AWS_REGION=${AWS_REGION:-us-west-2}
 fi
@@ -181,6 +186,32 @@ POLICY_DOC=$(cat <<EOF
         "sts:AssumeRole"
       ],
       "Resource": "arn:aws:iam::*:role/cdk-*"
+    },
+    {
+      "Sid": "ECRAccess",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:CreateRepository",
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SSMBootstrapAccess",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:PutParameter",
+        "ssm:GetParameter",
+        "ssm:DeleteParameter"
+      ],
+      "Resource": "*"
     }
   ]
 }
