@@ -191,15 +191,7 @@ POLICY_DOC=$(cat <<EOF
       "Sid": "ECRAccess",
       "Effect": "Allow",
       "Action": [
-        "ecr:CreateRepository",
-        "ecr:GetAuthorizationToken",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage",
-        "ecr:PutImage",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload"
+        "ecr:*"
       ],
       "Resource": "*"
     },
@@ -222,12 +214,15 @@ if [ "$ROLE_EXISTS" = true ]; then
   echo "✓ IAM role exists: $ROLE_NAME"
   ROLE_ARN=$(aws iam get-role --role-name "$ROLE_NAME" --query 'Role.Arn' --output text)
   
-  echo "Updating IAM policy..."
+  echo "Updating IAM policy with ECR and SSM permissions..."
   aws iam put-role-policy \
     --role-name "$ROLE_NAME" \
     --policy-name "$POLICY_NAME" \
     --policy-document "$POLICY_DOC" \
     --output text
+  
+  echo "Waiting for policy update to propagate..."
+  sleep 15
 else
   echo "✱ Creating IAM role: $ROLE_NAME"
   TRUST_DOC='{
