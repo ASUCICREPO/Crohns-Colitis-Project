@@ -28,15 +28,15 @@ if [ -z "${PROJECT_NAME:-}" ]; then
   PROJECT_NAME=${PROJECT_NAME:-crohns-colitis}
 fi
 
-if [ -z "${AWS_REGION:-}" ]; then
-  echo "Available regions:"
-  echo "  1) us-east-1 (N. Virginia)"
-  echo "  2) us-west-2 (Oregon)"
-  echo "  3) eu-west-1 (Ireland)"
-  echo "  4) ap-southeast-1 (Singapore)"
-  read -rp "Enter AWS region [default: us-west-2]: " AWS_REGION
-  AWS_REGION=${AWS_REGION:-us-west-2}
-fi
+# Always prompt for region (ignore environment variable)
+echo "Available regions:"
+echo "  1) us-east-1 (N. Virginia)"
+echo "  2) us-west-2 (Oregon)"
+echo "  3) eu-west-1 (Ireland)"
+echo "  4) ap-southeast-1 (Singapore)"
+read -rp "Enter AWS region [default: us-west-2]: " USER_AWS_REGION
+AWS_REGION=${USER_AWS_REGION:-us-west-2}
+echo "Selected region: $AWS_REGION"
 
 if [ -z "${AWS_ACCOUNT_ID:-}" ]; then
   AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text 2>/dev/null || echo "")
