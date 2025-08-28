@@ -31,12 +31,7 @@ Step-by-step instructions using only the AWS Console interface.
 ### **Step 3: Configure S3 Settings**
 1. **S3 location**:
    - **Bucket**: Select `your-qbusiness-documents`
-   - **Inclusion prefixes**: Leave blank (includes all files)
-   - **Exclusion patterns**: Enter `*.tmp, *.log` (optional)
-2. **Document processing**:
-   - **Language**: English
-   - **Document attribute mapping**: Leave default
-3. Click **Next**
+2. Click **Next**
 
 ### **Step 4: Set IAM Role**
 1. **IAM role**: Select **Create a new service role**
@@ -104,6 +99,196 @@ Step-by-step instructions using only the AWS Console interface.
 1. Review all settings
 2. Click **Add data source**
 3. Click **Sync now** to start crawling
+
+---
+
+## 🔧 **Troubleshooting & Configurations**
+
+### **Common S3 Data Source Issues**
+
+#### **Issue: Sync Failed - Permission Denied**
+**Symptoms:** "Access denied" error during sync
+**Solution:**
+1. Go to **IAM Console** → **Roles**
+2. Find role: `QBusinessS3Role`
+3. Click **Add permissions** → **Attach policies**
+4. Add: `AmazonS3ReadOnlyAccess`
+5. **Re-sync** data source
+
+#### **Issue: No Documents Indexed**
+**Symptoms:** Sync completes but 0 documents processed
+**Solution:**
+1. Check **file formats** - only PDF, DOC, TXT, HTML supported
+2. Verify **file size** - must be under 50MB
+3. Check **bucket permissions** - ensure Q Business can read
+4. **Test**: Upload a simple TXT file and re-sync
+
+#### **Issue: Partial Document Processing**
+**Symptoms:** Some files indexed, others skipped
+**Solution:**
+1. **Check file names** - avoid special characters
+2. **Verify encoding** - use UTF-8 for text files
+3. **Review logs** in CloudWatch for specific errors
+4. **Split large files** into smaller chunks
+
+### **Common Web Crawler Issues**
+
+#### **Issue: Web Crawler Failed to Initialize**
+**Symptoms:** "Failed validating Web Crawler configuration" error
+**Solution:**
+1. **Test URLs manually** - verify they load in browser
+2. **Check robots.txt**: Visit `https://domain.com/robots.txt`
+3. **Reduce crawl settings**:
+   - Crawl depth: `2`
+   - Max links: `50`
+   - Crawl rate: `100 URLs/minute`
+4. **Remove problematic URLs** temporarily
+5. **Start with single URL** and expand gradually
+
+#### **Issue: Zero Pages Crawled**
+**Symptoms:** Sync completes but no pages indexed
+**Solution:**
+1. **Check URL accessibility**:
+   ```bash
+   curl -I https://www.crohnscolitisfoundation.org/
+   ```
+2. **Update URL patterns**:
+   - Include: `*.html, */about-*, */treatment-*`
+   - Exclude: `*/donate/*, */events/*, */admin/*`
+3. **Verify SSL certificates** are valid
+4. **Try alternative URLs**:
+   ```
+   https://www.mayoclinic.org/diseases-conditions/crohns-disease
+   https://medlineplus.gov/crohnsdisease.html
+   ```
+
+#### **Issue: Crawl Blocked by Website**
+**Symptoms:** "Forbidden" or "Access denied" during crawl
+**Solution:**
+1. **Check robots.txt** compliance
+2. **Reduce crawl rate** to `50 URLs/minute`
+3. **Add delays** between requests
+4. **Contact website owner** for crawling permission
+5. **Use alternative medical websites**
+
+### **Data Source Configuration Best Practices**
+
+#### **S3 Bucket Organization:**
+```
+medical-documents/
+├── guidelines/
+│   ├── crohns-treatment.pdf
+│   └── uc-management.docx
+├── patient-education/
+│   ├── diet-tips.txt
+│   └── medication-guide.pdf
+└── research/
+    ├── latest-studies.pdf
+    └── clinical-trials.html
+```
+
+#### **Web Crawler URL Strategy:**
+**Start Small:**
+```
+https://www.crohnscolitisfoundation.org/about-crohns-disease
+```
+
+**Expand Gradually:**
+```
+https://www.crohnscolitisfoundation.org/
+https://www.crohnscolitisfoundation.org/about-crohns-disease
+https://www.crohnscolitisfoundation.org/about-ulcerative-colitis
+```
+
+**Production URLs:**
+```
+https://www.crohnscolitisfoundation.org/
+https://www.mayoclinic.org/diseases-conditions/crohns-disease
+https://medlineplus.gov/crohnsdisease.html
+https://www.webmd.com/ibd-crohns-disease/
+```
+
+### **Monitoring Data Source Health**
+
+#### **Check Sync Status:**
+1. **Q Business Console** → **Data sources**
+2. **Monitor columns**:
+   - **Status**: Should show "Completed"
+   - **Documents**: Should show count > 0
+   - **Last sync**: Should be recent
+   - **Errors**: Should be 0
+
+#### **CloudWatch Monitoring:**
+1. Go to **CloudWatch** → **Log groups**
+2. Find: `/aws/qbusiness/APPLICATION_ID`
+3. **Check for errors**:
+   - Permission denied
+   - Network timeouts
+   - File format errors
+   - Crawl failures
+
+#### **Test Data Source Effectiveness:**
+1. **Ask specific questions** about uploaded content
+2. **Check citations** in responses
+3. **Verify source attribution** shows your documents/websites
+4. **Test different question types**:
+   - General: "What is Crohn's disease?"
+   - Specific: "What are biologics for UC?"
+   - Treatment: "How to manage Crohn's flare?"
+
+### **Performance Optimization**
+
+#### **S3 Data Source:**
+- **File size**: Keep under 10MB for faster processing
+- **File format**: PDF and DOCX work best
+- **Folder structure**: Organize by topic for easier management
+- **Sync frequency**: Daily for active content, weekly for stable docs
+
+#### **Web Crawler:**
+- **Crawl depth**: Start with 2, increase to 3 if needed
+- **URL limits**: 50-100 links per page maximum
+- **Crawl rate**: 100-200 URLs/minute for most sites
+- **Content filtering**: Exclude non-medical content
+
+### **Emergency Fixes**
+
+#### **Quick S3 Fix:**
+1. **Delete data source**
+2. **Create new S3 data source** with single test file
+3. **Verify sync works**
+4. **Gradually add more documents**
+
+#### **Quick Web Crawler Fix:**
+1. **Use reliable medical site**:
+   ```
+   https://medlineplus.gov/crohnsdisease.html
+   ```
+2. **Minimal settings**:
+   - Depth: 1
+   - Links: 10
+   - Rate: 50/minute
+3. **Test sync**
+4. **Expand once working**
+
+### **Verification Checklist**
+
+#### **S3 Data Source:**
+- [ ] Bucket exists and accessible
+- [ ] Documents uploaded successfully
+- [ ] IAM role has S3 read permissions
+- [ ] Sync status shows "Completed"
+- [ ] Document count > 0
+- [ ] Test questions return relevant answers
+- [ ] Citations reference uploaded documents
+
+#### **Web Crawler:**
+- [ ] URLs accessible in browser
+- [ ] robots.txt allows crawling
+- [ ] IAM role created successfully
+- [ ] Sync status shows "Completed"
+- [ ] Pages crawled > 0
+- [ ] Test questions return website content
+- [ ] Citations show website URLs
 
 ---
 
