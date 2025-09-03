@@ -37,15 +37,14 @@ const IdlePrompt = ({ language, onContinue, onClose }) => {
   return (
     <Box mb={2}>
       <Grid container direction="row" justifyContent="flex-start" alignItems="flex-end">
-        <Grid item>
+        <Grid item sx={{ mr: 1, ml: 2 }}>
           <Avatar alt="Bot Avatar" src={BotAvatar} />
         </Grid>
         <Grid item className="botMessage" sx={{ 
           backgroundColor: (theme) => theme.palette.background.botMessage,
           borderRadius: 2,
           p: 2,
-          maxWidth: '80%',
-          ml: 1
+          maxWidth: '80%'
         }}>
           <Typography variant="body2" sx={{ mb: 2 }}>
             {getTranslation('idleMessage', language)}

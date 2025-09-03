@@ -16,7 +16,7 @@ export const BOTMESSAGE_BACKGROUND = "#dbf6ff"; // Background color for messages
 export const USERMESSAGE_BACKGROUND = "#dbe3f9"; // Background color for messages sent by the user
 
 // Bot heading color
-export const BOT_HEADING_COLOR = "#1d8cca"; // Color for bot heading/header
+export const BOT_HEADING_COLOR = "#001A70"//"#1d8cca"; // Color for bot heading/header
 
 // Additional UI colors
 export const CHAT_INPUT_BACKGROUND = "#dbe3f9"; // Chat input box background color
