@@ -355,6 +355,9 @@ function AmazonQChat({ isExpanded = false, onClose }) {
         fullData: data
       });
       
+      // Check if this is a greeting response (should not show sources)
+      const isGreetingResponse = messageToDisplay.includes("Hello! I'm here to help with Crohn's disease and ulcerative colitis questions");
+      
       // Check if API response contains low confidence text or if confidence score is low
       const containsLowConfidenceText = messageToDisplay.includes("I'm not confident in this answer. Would you like to share your email for a follow-up?");
       const isLowConfidenceScore = (data.confidenceScore || 100) < 80;
@@ -374,11 +377,15 @@ function AmazonQChat({ isExpanded = false, onClose }) {
         willTriggerLowConfidence: containsLowConfidenceText || isLowConfidenceScore || isNoResponseReceived || isSystemMessageNone
       });
       
-      // If low confidence, show the standard message
-      if (containsLowConfidenceText || isLowConfidenceScore || isNoResponseReceived || isSystemMessageNone) {
-        console.log('🔍 DEBUG - Triggering low confidence response');
-        messageToDisplay = getTranslation('lowConfidenceMessage', 'en'); // Start with English, will be translated below
-        // Remove sources for low confidence responses
+      // If greeting response or low confidence, remove sources
+      if (isGreetingResponse || containsLowConfidenceText || isLowConfidenceScore || isNoResponseReceived || isSystemMessageNone) {
+        if (isGreetingResponse) {
+          console.log('🔍 DEBUG - Greeting response detected, removing sources');
+        } else {
+          console.log('🔍 DEBUG - Triggering low confidence response');
+          messageToDisplay = getTranslation('lowConfidenceMessage', 'en'); // Start with English, will be translated below
+        }
+        // Remove sources for greeting and low confidence responses
         data.sourceAttributions = [];
       }
       
@@ -393,10 +400,10 @@ function AmazonQChat({ isExpanded = false, onClose }) {
       }
       
       // Determine if we should show citations based on confidence score
-      const showCitations = (data.confidenceScore || 100) >= 80 && !containsLowConfidenceText && !isLowConfidenceScore && !isNoResponseReceived && !isSystemMessageNone;
+      const showCitations = (data.confidenceScore || 100) >= 80 && !isGreetingResponse && !containsLowConfidenceText && !isLowConfidenceScore && !isNoResponseReceived && !isSystemMessageNone;
       
       // Create bot response message block
-      const finalConfidenceScore = containsLowConfidenceText || isLowConfidenceScore || isNoResponseReceived || isSystemMessageNone ? 50 : (data.confidenceScore || 100);
+      const finalConfidenceScore = isGreetingResponse || containsLowConfidenceText || isLowConfidenceScore || isNoResponseReceived || isSystemMessageNone ? 50 : (data.confidenceScore || 100);
       
       // DEBUG: Log message block creation
       console.log('🔍 DEBUG - Creating message block:', {
