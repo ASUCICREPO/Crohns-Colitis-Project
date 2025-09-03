@@ -23,10 +23,10 @@ const getWelcomeMessage = async (language) => {
 // Helper function to check if this is the first welcome message
 const isWelcomeMessage = (message) => {
   const welcomeMessages = [
-    "Hi! This is Coli. How can I help you today?",
-    "¡Hola! Soy Coli. ¿Cómo puedo ayudarte hoy?",
-    "Bonjour! Je suis Coli. Comment puis-je vous aider aujourd'hui?",
-    "您好！我是Coli。今天我可以如何帮助您？"
+    "Hi! This is Gutsy. How can I help you today?",
+    "¡Hola! Soy Gutsy. ¿Cómo puedo ayudarte hoy?",
+    "Bonjour! Je suis Gutsy. Comment puis-je vous aider aujourd'hui?",
+    "您好！我是Gutsy。今天我可以如何帮助您？"
   ];
   return welcomeMessages.includes(message);
 };
@@ -115,7 +115,8 @@ function AmazonQChat({ isExpanded = false, onClose }) {
           "BOT",
           "TEXT",
           "RECEIVED"
-        )
+        ),
+        showExampleQuestions: true
       };
       
       console.log('🔄 DEBUG - Setting fresh messageList with welcome message');
@@ -215,7 +216,8 @@ function AmazonQChat({ isExpanded = false, onClose }) {
             "BOT",
             "TEXT",
             "RECEIVED"
-          )
+          ),
+          showExampleQuestions: true
         };
         setMessageList(prevList => {
           if (prevList.length === 0) {
@@ -531,7 +533,7 @@ function AmazonQChat({ isExpanded = false, onClose }) {
                         chatHistory={chatHistoryForThisMessage}
                         showLanguageButtons={msg.showLanguageButtons}
                         onLanguageSelect={handleSendMessage}
-                        showExampleQuestions={isWelcomeMessage(msg.message) && messageList.length === 1}
+                        showExampleQuestions={msg.showExampleQuestions || (isWelcomeMessage(msg.message) && messageList.length === 1)}
                         onExampleQuestionClick={handleSendMessage}
                         isExpanded={isExpanded}
                       />

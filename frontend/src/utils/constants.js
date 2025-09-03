@@ -71,10 +71,8 @@ export const TEXT = {
     FAQ_TITLE: "常见问题",
     FAQS: [
       "什么是克罗恩病？",
-      "我刚被诊断，我需要知道什么",
-      "治疗克罗恩病的主要药物类型有哪些？",
-      "药物能治愈克罗恩病吗？",
-      "克罗恩病与溃疡性结肠炎有何不同？"
+      "什么是溃疡性结肠炎？",
+      "患有IBD我可以吃什么？"
     ],
     CHAT_HEADER_TITLE: "克罗恩病和结肠炎基金会",
     CHAT_INPUT_PLACEHOLDER: "输入查询...",
@@ -108,10 +106,8 @@ export const TEXT = {
     FAQ_TITLE: "Preguntas frecuentes",
     FAQS: [
       "¿Qué es la enfermedad de Crohn?",
-      "Me acaban de diagnosticar, ¿qué necesito saber?",
-      "¿Cuáles son los principales tipos de medicamentos utilizados para tratar la enfermedad de Crohn?",
-      "¿Pueden los medicamentos curar la enfermedad de Crohn?",
-      "¿En qué se diferencia la enfermedad de Crohn de la colitis ulcerosa?"
+      "¿Qué es la colitis ulcerosa?",
+      "¿Qué puedo comer con EII?"
     ],
     CHAT_HEADER_TITLE: "Fundación de Crohn y Colitis",
     CHAT_INPUT_PLACEHOLDER: "Escribe una Consulta...",
@@ -145,10 +141,8 @@ export const TEXT = {
     FAQ_TITLE: "Questions fréquemment posées",
     FAQS: [
       "Qu'est-ce que la maladie de Crohn ?",
-      "Je viens d'être diagnostiqué, que dois-je savoir ?",
-      "Quels sont les principaux types de médicaments utilisés pour traiter la maladie de Crohn ?",
-      "Les médicaments peuvent-ils guérir la maladie de Crohn ?",
-      "En quoi la maladie de Crohn diffère-t-elle de la colite ulcéreuse ?"
+      "Qu'est-ce que la colite ulcéreuse ?",
+      "Que puis-je manger avec une MICI ?"
     ],
     CHAT_HEADER_TITLE: "Fondation Crohn et Colite",
     CHAT_INPUT_PLACEHOLDER: "Tapez une requête...",
