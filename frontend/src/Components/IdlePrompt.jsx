@@ -50,33 +50,33 @@ const IdlePrompt = ({ language, onContinue, onClose }) => {
             {getTranslation('idleMessage', language)}
           </Typography>
           
-          {!showCountdown ? (
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button
-                variant="contained"
-                size="small"
-                onClick={handleYes}
-                sx={{
-                  backgroundColor: '#004D77',
-                  '&:hover': { backgroundColor: '#003A5C' }
-                }}
-              >
-                {getTranslation('yes', language)}
-              </Button>
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={handleNo}
-                sx={{
-                  borderColor: '#004D77',
-                  color: '#004D77',
-                  '&:hover': { borderColor: '#003A5C', color: '#003A5C' }
-                }}
-              >
-                {getTranslation('no', language)}
-              </Button>
-            </Box>
-          ) : (
+          <Box sx={{ display: 'flex', gap: 1, mb: showCountdown ? 1 : 0 }}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleYes}
+              sx={{
+                backgroundColor: '#004D77',
+                '&:hover': { backgroundColor: '#003A5C' }
+              }}
+            >
+              {getTranslation('yes', language)}
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={handleNo}
+              sx={{
+                borderColor: '#004D77',
+                color: '#004D77',
+                '&:hover': { borderColor: '#003A5C', color: '#003A5C' }
+              }}
+            >
+              {getTranslation('no', language)}
+            </Button>
+          </Box>
+          
+          {showCountdown && (
             <Typography variant="body2" sx={{ color: '#666', fontStyle: 'italic' }}>
               {getTranslation('closingIn', language)} {countdown} {getTranslation('seconds', language)}...
             </Typography>
