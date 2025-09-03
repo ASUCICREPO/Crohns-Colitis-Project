@@ -67,7 +67,7 @@ function AmazonQChat({ isExpanded = false, onClose }) {
   // Idle timer functionality
   const { startTimer, resetTimer, clearTimer } = useIdleTimer(() => {
     setShowIdlePrompt(true);
-  }, 20000);
+  }, 30000);
   
   // Add a function to add messages from other components
   const addMessageToList = (message) => {

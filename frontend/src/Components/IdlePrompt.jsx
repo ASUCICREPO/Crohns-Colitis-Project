@@ -4,7 +4,7 @@ import BotAvatar from '../Assets/gutsybotsize.png';
 import { getTranslation } from '../utils/translations';
 
 const IdlePrompt = ({ language, onContinue, onClose }) => {
-  const [countdown, setCountdown] = useState(15);
+  const [countdown, setCountdown] = useState(25);
   const [showCountdown, setShowCountdown] = useState(false);
 
   useEffect(() => {
@@ -17,11 +17,11 @@ const IdlePrompt = ({ language, onContinue, onClose }) => {
     return () => clearTimeout(timer);
   }, [countdown, showCountdown, onClose]);
 
-  // Auto-trigger countdown after 15 seconds if no response
+  // Auto-trigger countdown after 25 seconds if no response
   useEffect(() => {
     const autoTimer = setTimeout(() => {
       setShowCountdown(true);
-    }, 15000);
+    }, 25000);
     
     return () => clearTimeout(autoTimer);
   }, []);
