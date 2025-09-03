@@ -20,13 +20,11 @@ const IdlePrompt = ({ language, onContinue, onClose }) => {
   // Auto-trigger countdown after 15 seconds if no response
   useEffect(() => {
     const autoTimer = setTimeout(() => {
-      if (!showCountdown) {
-        setShowCountdown(true);
-      }
+      setShowCountdown(true);
     }, 15000);
     
     return () => clearTimeout(autoTimer);
-  }, [showCountdown]);
+  }, []);
 
   const handleNo = () => {
     setShowCountdown(true);

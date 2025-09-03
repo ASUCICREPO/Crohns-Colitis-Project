@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography"
-import { TEXT, HEADER_TEXT_GRADIENT } from "../utilities/constants"
+import { TEXT } from "../utils/constants"
 import { Box, Container, useMediaQuery } from "@mui/material"
 
 function ChatHeader() {
@@ -28,7 +28,7 @@ function ChatHeader() {
           variant={isSmallScreen ? "h5" : "h4"}
           className="chatHeaderText"
           sx={{
-            color: HEADER_TEXT_GRADIENT,
+            color: "#001A70",
             fontWeight: "bold",
             fontSize: isSmallScreen ? "1.25rem" : "2rem",
             textAlign: "center",

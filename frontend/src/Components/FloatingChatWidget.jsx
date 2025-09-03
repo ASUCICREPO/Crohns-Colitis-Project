@@ -16,6 +16,7 @@ import { useLanguage } from '../utils/LanguageContext';
 import { detectUserLanguage } from '../utils/languageConfig';
 import { getTranslation } from '../utils/translations';
 import { BOT_HEADING_COLOR } from '../utils/constants';
+import SpeechBubble from './SpeechBubble';
 
 
 const FloatingChatWidget = () => {
@@ -119,37 +120,50 @@ const FloatingChatWidget = () => {
     <>
       {/* Floating Chat Button */}
       {!isOpen && (
-        <Fab
-          color="primary"
-          onClick={toggleChat}
-          sx={{
-            position: 'fixed',
-            bottom: 20,
-            right: 20,
-            zIndex: 1000,
-            pointerEvents: 'auto',
-            width: { xs: 64, sm: 72 },
-            height: { xs: 64, sm: 72 },
-            backgroundColor: '#004D77',
-            boxShadow: '0 4px 20px rgba(0, 77, 119, 0.3)',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            '&:hover': { 
-              backgroundColor: '#003A5C',
-              transform: 'scale(1.05)',
-              boxShadow: '0 6px 24px rgba(0, 77, 119, 0.4)'
-            }
-          }}
-        >
-          <img 
-            src={ChatbotIcon} 
-            alt="Chat" 
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
+        <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}>
+          {/* Speech Bubble */}
+          <Box sx={{ 
+            position: 'absolute', 
+            bottom: '80px', 
+            right: '10px',
+            '@keyframes fadeIn': {
+              '0%': { opacity: 0, transform: 'translateY(10px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' }
+            },
+            animation: 'fadeIn 0.5s ease-in-out'
+          }}>
+            <SpeechBubble message="How can I help?" />
+          </Box>
+          
+          {/* Chat Button */}
+          <Fab
+            color="primary"
+            onClick={toggleChat}
+            sx={{
+              pointerEvents: 'auto',
+              width: { xs: 64, sm: 72 },
+              height: { xs: 64, sm: 72 },
+              backgroundColor: '#004D77',
+              boxShadow: '0 4px 20px rgba(0, 77, 119, 0.3)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              '&:hover': { 
+                backgroundColor: '#003A5C',
+                transform: 'scale(1.05)',
+                boxShadow: '0 6px 24px rgba(0, 77, 119, 0.4)'
+              }
             }}
-          />
-        </Fab>
+          >
+            <img 
+              src={ChatbotIcon} 
+              alt="Chat" 
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+          </Fab>
+        </Box>
       )}
 
       {/* Chat Window */}

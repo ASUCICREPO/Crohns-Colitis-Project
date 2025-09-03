@@ -36,10 +36,8 @@ export const TEXT = {
     FAQ_TITLE: "Frequently Asked Questions",
     FAQS: [
       "What is Crohn's disease?",
-      "I'm newly diagnosed, what do I need to know",
-      "What are the main types of medications used to treat Crohn’s disease?",
-      "Can medications cure Crohn’s disease?",
-      "How does Crohn’s disease differ from ulcerative colitis?"
+      "What is ulcerative colitis?",
+      "What can I eat with IBD?"
     ],
     CHAT_HEADER_TITLE: "Crohn's and Colitis Foundation",
     CHAT_INPUT_PLACEHOLDER: "Type a Query...",
