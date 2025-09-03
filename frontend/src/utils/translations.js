@@ -3,11 +3,11 @@ export const getTranslation = (key, language = 'en') => {
   console.log('🔄 DEBUG - getTranslation called with key:', key, 'language:', language);
   const translations = {
     en: {
-      welcome: "Hi! This is Coli. How can I help you today?",
+      welcome: "Hi! This is Gutsy. How can I help you today?",
       exampleQuestions: [
-        "What is IBD?",
         "What is Crohn's disease?",
-        "What is UC (Ulcerative colitis)?"
+      "What is ulcerative colitis?",
+      "What can I eat with IBD?"
       ],
       chatInputPlaceholder: "Type your message here...",
       loading: "Loading...",
@@ -30,11 +30,11 @@ export const getTranslation = (key, language = 'en') => {
       languageSwitchTooltip: "Note: switching to another language will lose current conversation"
     },
     es: {
-      welcome: "¡Hola! Soy Coli. ¿Cómo puedo ayudarte hoy?",
+      welcome: "¡Hola! Soy Gutsy. ¿Cómo puedo ayudarte hoy?",
       exampleQuestions: [
-        "¿Qué es la EII?",
-        "¿Qué es la enfermedad de Crohn?",
-        "¿Qué es la CU (Colitis ulcerosa)?"
+        "¿Qué es la enfermedad de Crohn?", 
+        "¿Qué es la colitis ulcerosa?", 
+        "¿Qué puedo comer si tengo EII?"
       ],
       chatInputPlaceholder: "Escribe tu mensaje aquí...",
       loading: "Cargando...",

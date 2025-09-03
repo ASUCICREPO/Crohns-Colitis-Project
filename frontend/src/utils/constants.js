@@ -21,7 +21,7 @@ export const BOT_HEADING_COLOR = "#001A70"//"#1d8cca"; // Color for bot heading/
 // Additional UI colors
 export const CHAT_INPUT_BACKGROUND = "#dbe3f9"; // Chat input box background color
 export const FOLLOWUP_BUTTON_BACKGROUND = "#fce2cc"; // Request Follow Up button background
-export const MARKETING_BUTTON_BACKGROUND = "#0080ac"; // Marketing widget button backgrounds
+export const MARKETING_BUTTON_BACKGROUND = "#001A70"; // Marketing widget button backgrounds
 
 // --------------------------------------------------------------------------------------------------------//
 // --------------------------------------------------------------------------------------------------------//
