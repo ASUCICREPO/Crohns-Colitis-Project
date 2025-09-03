@@ -16,25 +16,15 @@ exports.handler = async (event) => {
     const body = JSON.parse(event.body);
     const { message, conversationId, parentMessageId, sessionId } = body;
     
-    // Check if message is a general greeting
-    const userMessage = message || body.userMessage;
-    const isGreeting = /^(hello|hi|hold|wait|hold on)\s*[!.?]*$/i.test(userMessage.trim());
-    
-    // Add medical assistant prompting for non-greetings
-    let enhancedMessage = userMessage;
-    if (!isGreeting) {
-      enhancedMessage = `You are a medical assistant specializing in IBD (Inflammatory Bowel Disease). IMPORTANT: For general greetings or non-medical phrases like "hello", "hi", "hold", "wait", "hold on": - Do NOT search the knowledge base - Do NOT provide sources or citations - Respond directly with: "Hello! I'm here to help with Crohn's disease and ulcerative colitis questions. What specific medical information do you need?" Only search the knowledge base and provide sources for specific medical questions about: - Crohn's disease symptoms, treatments, medications - Ulcerative colitis symptoms, treatments, medications - IBD diet, lifestyle, management - Specific medical procedures or complications\n\nUser question: ${userMessage}`;
-    }
-    
     const params = {
       applicationId: process.env.QBUSINESS_APPLICATION_ID,
-      userMessage: enhancedMessage
+      userMessage: message || body.userMessage
     };
     
     if (conversationId) params.conversationId = conversationId;
     if (parentMessageId) params.parentMessageId = parentMessageId;
     
-    if (!params.applicationId || !userMessage) {
+    if (!params.applicationId || !params.userMessage) {
       throw new Error('Application ID and user message are required');
     }
     
