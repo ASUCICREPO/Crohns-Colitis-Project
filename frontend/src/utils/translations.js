@@ -6,8 +6,8 @@ export const getTranslation = (key, language = 'en') => {
       welcome: "Hi! This is Gutsy. How can I help you today?",
       exampleQuestions: [
         "What is Crohn's disease?",
-      "What is ulcerative colitis?",
-      "What can I eat with IBD?"
+        "What is ulcerative colitis?",
+        "What can I eat with IBD?"
       ],
       chatInputPlaceholder: "Type your message here...",
       loading: "Loading...",
