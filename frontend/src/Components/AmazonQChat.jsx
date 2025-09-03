@@ -98,6 +98,14 @@ function AmazonQChat({ isExpanded = false, onClose }) {
     // Update the current language state first
     setCurrentLanguage(newLanguage);
     
+    // Reset idle timer and clear idle prompt
+    clearTimer();
+    setShowIdlePrompt(false);
+    if (idlePromptTimer) {
+      clearTimeout(idlePromptTimer);
+      setIdlePromptTimer(null);
+    }
+    
     // Complete conversation reset - clear everything immediately
     console.log('🔄 DEBUG - Clearing all conversation data');
     setMessageList([]);
@@ -128,7 +136,10 @@ function AmazonQChat({ isExpanded = false, onClose }) {
       setMessageList([welcomeMessage]);
       setHasShownWelcome(true);
       setIsLanguageRestart(false);
-      console.log('🔄 DEBUG - Language restart completed');
+      
+      // Start fresh idle timer after language switch
+      startTimer();
+      console.log('🔄 DEBUG - Language restart completed with fresh timer');
     }, 100);
   };
   
