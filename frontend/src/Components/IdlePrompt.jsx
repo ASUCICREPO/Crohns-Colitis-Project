@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Avatar, Box, Typography, Button } from '@mui/material';
-import BotAvatar from '../Assets/Group 17.png';
+import BotAvatar from '../Assets/gutsybotsize.png';
 import { getTranslation } from '../utils/translations';
 
 const IdlePrompt = ({ language, onContinue, onClose }) => {

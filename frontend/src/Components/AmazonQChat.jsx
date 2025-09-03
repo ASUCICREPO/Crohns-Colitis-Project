@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Grid, Avatar, Box, CircularProgress, Typography } from "@mui/material";
 import UserAvatar from "../Assets/User Avatar.png";
-import BotAvatar from "../Assets/Group 17.png";
+import BotAvatar from "../Assets/gutsybotsize.png";
 import createMessageBlock from "../utils/createMessageBlock";
 import ChatInput from "./ChatInput";
 import AmazonQService from "../services/amazonQService";

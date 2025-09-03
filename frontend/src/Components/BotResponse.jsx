@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Avatar, Typography, Box, Link, Button } from "@mui/material";
-import BotAvatar from "../Assets/Group 17.png";
+import BotAvatar from "../Assets/gutsybotsize.png";
 import { ALLOW_MARKDOWN_BOT, TEXT } from "../utils/constants";
 import ReactMarkdown from "react-markdown";
 import EmailCollectionModal from "./EmailCollectionModal";

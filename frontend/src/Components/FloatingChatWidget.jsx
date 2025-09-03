@@ -6,7 +6,7 @@ import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import BotAvatar from '../Assets/BotAvatar.png';
-import ChatbotIcon from '../Assets/Group 17.png';
+import ChatbotIcon from '../Assets/gutsybotsize.png';
 
 import AmazonQChat from './AmazonQChat';
 import MarketingSidebar from './MarketingSidebar';
