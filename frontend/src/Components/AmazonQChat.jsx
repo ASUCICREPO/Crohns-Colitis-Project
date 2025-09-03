@@ -220,6 +220,7 @@ function AmazonQChat({ isExpanded = false, onClose }) {
         setMessageList(prevList => {
           if (prevList.length === 0) {
             setHasShownWelcome(true);
+            setTimeout(() => startTimer(), 500);
             return [welcomeMessage];
           }
           return prevList;
@@ -432,7 +433,7 @@ function AmazonQChat({ isExpanded = false, onClose }) {
       });
       
       // Start idle timer after bot response
-      startTimer();
+      setTimeout(() => startTimer(), 100);
       
     } catch (error) {
       console.error("Error in chat interaction:", error);

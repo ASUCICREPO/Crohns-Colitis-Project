@@ -297,14 +297,28 @@ sleep 10
 CODEBUILD_PROJECT_NAME="${PROJECT_NAME}-deploy"
 echo "Creating CodeBuild project: $CODEBUILD_PROJECT_NAME"
 
+# Check for existing Amplify app
+echo "Checking for existing Amplify app..."
+EXISTING_AMPLIFY_APP=$(aws amplify list-apps --query "apps[?name=='${PROJECT_NAME}-app'].appId" --output text 2>/dev/null || echo "")
+
+if [ ! -z "$EXISTING_AMPLIFY_APP" ] && [ "$EXISTING_AMPLIFY_APP" != "None" ]; then
+  echo "Found existing Amplify app: $EXISTING_AMPLIFY_APP"
+  AMPLIFY_APP_ID=$EXISTING_AMPLIFY_APP
+else
+  echo "No existing Amplify app found, will create new one"
+  AMPLIFY_APP_ID=""
+fi
+
 ENV_VARS=$(cat <<EOF
 [
   {"name": "AWS_REGION", "value": "$AWS_REGION", "type": "PLAINTEXT"},
   {"name": "ACTION", "value": "$ACTION", "type": "PLAINTEXT"},
   {"name": "SOURCE_EMAIL", "value": "${SOURCE_EMAIL:-admin@example.com}", "type": "PLAINTEXT"},
   {"name": "DESTINATION_EMAIL", "value": "${DESTINATION_EMAIL:-support@example.com}", "type": "PLAINTEXT"},
-  {"name": "AMPLIFY_APP_NAME", "value": "crohns-colitis-app", "type": "PLAINTEXT"},
-  {"name": "AMPLIFY_BRANCH_NAME", "value": "main", "type": "PLAINTEXT"}
+  {"name": "AMPLIFY_APP_NAME", "value": "${PROJECT_NAME}-app", "type": "PLAINTEXT"},
+  {"name": "AMPLIFY_APP_ID", "value": "${AMPLIFY_APP_ID}", "type": "PLAINTEXT"},
+  {"name": "AMPLIFY_BRANCH_NAME", "value": "main", "type": "PLAINTEXT"},
+  {"name": "GITHUB_URL", "value": "${GITHUB_URL}", "type": "PLAINTEXT"}
 ]
 EOF
 )

@@ -59,13 +59,17 @@ phases:
   post_build:
     commands:
       - echo "=== PHASE 3 Amplify Deployment ==="
-      - AMPLIFY_APP_NAME="crohns-colitis-app-$(date +%s)"
-      - AMPLIFY_BRANCH_NAME="main"
-      - echo "Creating fresh Amplify app $AMPLIFY_APP_NAME..."
-      - aws amplify create-app --name "$AMPLIFY_APP_NAME" --platform WEB > amplify-app.json
-      - AMPLIFY_APP_ID=$(cat amplify-app.json | jq -r '.app.appId')
-      - echo "Amplify App ID $AMPLIFY_APP_ID"
-      - aws amplify create-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" || echo "Branch may already exist"
+      - |
+        if [ ! -z "$AMPLIFY_APP_ID" ] && [ "$AMPLIFY_APP_ID" != "" ]; then
+          echo "Using existing Amplify app: $AMPLIFY_APP_ID"
+          aws amplify get-app --app-id "$AMPLIFY_APP_ID" > amplify-app.json
+        else
+          echo "Creating new Amplify app: $AMPLIFY_APP_NAME"
+          aws amplify create-app --name "$AMPLIFY_APP_NAME" --platform WEB > amplify-app.json
+          AMPLIFY_APP_ID=$(cat amplify-app.json | jq -r '.app.appId')
+          echo "Created new Amplify App ID: $AMPLIFY_APP_ID"
+        fi
+      - aws amplify create-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" || echo "Branch already exists"
       - echo "Uploading frontend build to S3..."
       - BUCKET_NAME="amplify-deploy-$(date +%s)"
       - aws s3 mb s3://$BUCKET_NAME
