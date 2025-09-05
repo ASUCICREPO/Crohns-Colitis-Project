@@ -28,28 +28,15 @@ if [ -z "${PROJECT_NAME:-}" ]; then
   PROJECT_NAME=${PROJECT_NAME:-crohns-colitis}
 fi
 
-# Check if CloudFormation stack already exists
-echo "Checking for existing deployment..."
-STACK_EXISTS=false
-# Check current AWS region first
-CURRENT_REGION=$(aws configure get region 2>/dev/null || echo "us-west-2")
-if aws cloudformation describe-stacks --stack-name "CrohnsColitisQBusinessStack" >/dev/null 2>&1; then
-  STACK_EXISTS=true
-  AWS_REGION=$CURRENT_REGION
-  echo "✅ Found existing deployment for project: $PROJECT_NAME in region: $AWS_REGION"
-  echo "📋 Skipping configuration - using existing settings"
-else
-  echo "🆕 New deployment detected"
-  # Always prompt for region (ignore environment variable)
-  echo "Available regions:"
-  echo "  1) us-east-1 (N. Virginia)"
-  echo "  2) us-west-2 (Oregon)"
-  echo "  3) eu-west-1 (Ireland)"
-  echo "  4) ap-southeast-1 (Singapore)"
-  read -rp "Enter AWS region [default: us-west-2]: " USER_AWS_REGION
-  AWS_REGION=${USER_AWS_REGION:-us-west-2}
-  echo "Selected region: $AWS_REGION"
-fi
+# Always prompt for region (ignore environment variable)
+echo "Available regions:"
+echo "  1) us-east-1 (N. Virginia)"
+echo "  2) us-west-2 (Oregon)"
+echo "  3) eu-west-1 (Ireland)"
+echo "  4) ap-southeast-1 (Singapore)"
+read -rp "Enter AWS region [default: us-west-2]: " USER_AWS_REGION
+AWS_REGION=${USER_AWS_REGION:-us-west-2}
+echo "Selected region: $AWS_REGION"
 
 if [ -z "${AWS_ACCOUNT_ID:-}" ]; then
   AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text 2>/dev/null || echo "")
@@ -71,18 +58,11 @@ if [[ "$ACTION" != "deploy" && "$ACTION" != "destroy" ]]; then
 fi
 
 if [ "$ACTION" = "deploy" ]; then
-  if [ "$STACK_EXISTS" = false ]; then
-    if [ -z "${SOURCE_EMAIL:-}" ]; then
-      read -rp "Enter source email (verified in SES): " SOURCE_EMAIL
-    fi
-    if [ -z "${DESTINATION_EMAIL:-}" ]; then
-      read -rp "Enter destination email: " DESTINATION_EMAIL
-    fi
-  else
-    # Get existing parameters from stack
-    SOURCE_EMAIL=$(aws cloudformation describe-stacks --stack-name "CrohnsColitisQBusinessStack" --query 'Stacks[0].Parameters[?ParameterKey==`sourceEmail`].ParameterValue' --output text 2>/dev/null || echo "admin@example.com")
-    DESTINATION_EMAIL=$(aws cloudformation describe-stacks --stack-name "CrohnsColitisQBusinessStack" --query 'Stacks[0].Parameters[?ParameterKey==`destinationEmail`].ParameterValue' --output text 2>/dev/null || echo "support@example.com")
-    echo "📧 Using existing emails: $SOURCE_EMAIL → $DESTINATION_EMAIL"
+  if [ -z "${SOURCE_EMAIL:-}" ]; then
+    read -rp "Enter source email (verified in SES): " SOURCE_EMAIL
+  fi
+  if [ -z "${DESTINATION_EMAIL:-}" ]; then
+    read -rp "Enter destination email: " DESTINATION_EMAIL
   fi
 fi
 
