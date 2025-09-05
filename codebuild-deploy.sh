@@ -35,14 +35,16 @@ if [ -z "${PROJECT_NAME:-}" ]; then
   PROJECT_NAME=${PROJECT_NAME:-crohns-colitis}
 fi
 
-# Always prompt for region (ignore environment variable)
-echo "Available regions:"
-echo "  1) us-east-1 (N. Virginia)"
-echo "  2) us-west-2 (Oregon)"
-echo "  3) eu-west-1 (Ireland)"
-echo "  4) ap-southeast-1 (Singapore)"
-read -rp "Enter AWS region [default: us-west-2]: " USER_AWS_REGION
-AWS_REGION=${USER_AWS_REGION:-us-west-2}
+# Only prompt for region if not set in config
+if [ -z "${AWS_REGION:-}" ]; then
+  echo "Available regions:"
+  echo "  1) us-east-1 (N. Virginia)"
+  echo "  2) us-west-2 (Oregon)"
+  echo "  3) eu-west-1 (Ireland)"
+  echo "  4) ap-southeast-1 (Singapore)"
+  read -rp "Enter AWS region [default: us-west-2]: " USER_AWS_REGION
+  AWS_REGION=${USER_AWS_REGION:-us-west-2}
+fi
 echo "Selected region: $AWS_REGION"
 
 if [ -z "${AWS_ACCOUNT_ID:-}" ]; then
