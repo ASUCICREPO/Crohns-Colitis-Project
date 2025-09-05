@@ -31,10 +31,12 @@ fi
 # Check if CloudFormation stack already exists
 echo "Checking for existing deployment..."
 STACK_EXISTS=false
-if aws cloudformation describe-stacks --stack-name "CrohnsColitisQBusinessStack" --region us-west-2 >/dev/null 2>&1; then
+# Check current AWS region first
+CURRENT_REGION=$(aws configure get region 2>/dev/null || echo "us-west-2")
+if aws cloudformation describe-stacks --stack-name "CrohnsColitisQBusinessStack" >/dev/null 2>&1; then
   STACK_EXISTS=true
-  AWS_REGION="us-west-2"
-  echo "✅ Found existing deployment for project: $PROJECT_NAME"
+  AWS_REGION=$CURRENT_REGION
+  echo "✅ Found existing deployment for project: $PROJECT_NAME in region: $AWS_REGION"
   echo "📋 Skipping configuration - using existing settings"
 else
   echo "🆕 New deployment detected"
