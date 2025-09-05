@@ -31,7 +31,7 @@ fi
 # Check if CloudFormation stack already exists
 echo "Checking for existing deployment..."
 STACK_EXISTS=false
-if aws cloudformation describe-stacks --stack-name "${PROJECT_NAME^}QBusinessStack" --region us-west-2 >/dev/null 2>&1; then
+if aws cloudformation describe-stacks --stack-name "CrohnsColitisQBusinessStack" --region us-west-2 >/dev/null 2>&1; then
   STACK_EXISTS=true
   AWS_REGION="us-west-2"
   echo "✅ Found existing deployment for project: $PROJECT_NAME"
@@ -78,8 +78,8 @@ if [ "$ACTION" = "deploy" ]; then
     fi
   else
     # Get existing parameters from stack
-    SOURCE_EMAIL=$(aws cloudformation describe-stacks --stack-name "${PROJECT_NAME^}QBusinessStack" --query 'Stacks[0].Parameters[?ParameterKey==`sourceEmail`].ParameterValue' --output text 2>/dev/null || echo "admin@example.com")
-    DESTINATION_EMAIL=$(aws cloudformation describe-stacks --stack-name "${PROJECT_NAME^}QBusinessStack" --query 'Stacks[0].Parameters[?ParameterKey==`destinationEmail`].ParameterValue' --output text 2>/dev/null || echo "support@example.com")
+    SOURCE_EMAIL=$(aws cloudformation describe-stacks --stack-name "CrohnsColitisQBusinessStack" --query 'Stacks[0].Parameters[?ParameterKey==`sourceEmail`].ParameterValue' --output text 2>/dev/null || echo "admin@example.com")
+    DESTINATION_EMAIL=$(aws cloudformation describe-stacks --stack-name "CrohnsColitisQBusinessStack" --query 'Stacks[0].Parameters[?ParameterKey==`destinationEmail`].ParameterValue' --output text 2>/dev/null || echo "support@example.com")
     echo "📧 Using existing emails: $SOURCE_EMAIL → $DESTINATION_EMAIL"
   fi
 fi
