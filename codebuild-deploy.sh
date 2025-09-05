@@ -6,6 +6,13 @@ set -euo pipefail
 
 echo "🚀 Starting Crohn's Colitis Q Business Deployment..."
 
+# Load config file if it exists
+if [ -f ".deploy-config" ]; then
+  echo "📋 Loading saved configuration..."
+  source .deploy-config
+  echo "✅ Using saved settings: $PROJECT_NAME, $AWS_REGION, $ACTION"
+fi
+
 # Get GitHub repository URL
 if [ -z "${GITHUB_URL:-}" ]; then
   GITHUB_URL=$(git config --get remote.origin.url 2>/dev/null || echo "")

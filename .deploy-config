@@ -1,0 +1,5 @@
+PROJECT_NAME=crohns-colitis
+AWS_REGION=us-west-2
+SOURCE_EMAIL=rajuhemanth456@gmail.com
+DESTINATION_EMAIL=hkoneti@asu.edu
+ACTION=deploy
