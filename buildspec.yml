@@ -77,8 +77,12 @@ phases:
       - aws s3 cp ../frontend/frontend-build.zip s3://$BUCKET_NAME/frontend-build.zip
       - aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy '{"Version":"2012-10-17","Statement":[{"Sid":"PublicReadGetObject","Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::'$BUCKET_NAME'/*"}]}' 2>/dev/null || echo "Bucket policy already set"
       - echo "Deploying frontend build to Amplify..."
-      - aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "https://$BUCKET_NAME.s3.amazonaws.com/frontend-build.zip"
-      - echo "Cleaning up temporary files..."
+      - DEPLOYMENT_ID=$(aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "https://$BUCKET_NAME.s3.amazonaws.com/frontend-build.zip" --query 'jobSummary.jobId' --output text)
+      - echo "Deployment started with ID: $DEPLOYMENT_ID"
+      - echo "Waiting for deployment to complete..."
+      - aws amplify get-job --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --job-id "$DEPLOYMENT_ID" --query 'job.summary.status' --output text
+      - echo "Deployment completed, cleaning up temporary files..."
+      - sleep 240
       - aws s3 rm s3://$BUCKET_NAME/frontend-build.zip || echo "File already removed"
       - echo "=== Deployment Complete ==="
       - echo "Backend deployed successfully"
