@@ -71,13 +71,15 @@ phases:
         fi
       - aws amplify create-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" || echo "Branch already exists"
       - echo "Uploading frontend build to S3..."
-      - BUCKET_NAME="amplify-deploy-$(date +%s)"
-      - aws s3 mb s3://$BUCKET_NAME
-      - aws s3api put-public-access-block --bucket $BUCKET_NAME --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
+      - BUCKET_NAME="crohns-colitis-deploy-temp"
+      - aws s3 mb s3://$BUCKET_NAME 2>/dev/null || echo "Bucket already exists"
+      - aws s3api put-public-access-block --bucket $BUCKET_NAME --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false 2>/dev/null || echo "Public access already configured"
       - aws s3 cp ../frontend/frontend-build.zip s3://$BUCKET_NAME/frontend-build.zip
-      - aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy '{"Version":"2012-10-17","Statement":[{"Sid":"PublicReadGetObject","Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::'$BUCKET_NAME'/*"}]}'
+      - aws s3api put-bucket-policy --bucket $BUCKET_NAME --policy '{"Version":"2012-10-17","Statement":[{"Sid":"PublicReadGetObject","Effect":"Allow","Principal":"*","Action":"s3:GetObject","Resource":"arn:aws:s3:::'$BUCKET_NAME'/*"}]}' 2>/dev/null || echo "Bucket policy already set"
       - echo "Deploying frontend build to Amplify..."
       - aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --source-url "https://$BUCKET_NAME.s3.amazonaws.com/frontend-build.zip"
+      - echo "Cleaning up temporary files..."
+      - aws s3 rm s3://$BUCKET_NAME/frontend-build.zip || echo "File already removed"
       - echo "=== Deployment Complete ==="
       - echo "Backend deployed successfully"
       - echo "Frontend Amplify URL https://$AMPLIFY_BRANCH_NAME.$AMPLIFY_APP_ID.amplifyapp.com"
