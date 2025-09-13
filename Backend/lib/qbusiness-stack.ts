@@ -76,10 +76,6 @@ export class QBusinessStack extends cdk.Stack {
       },
     });
 
-    // Debug: print values before creating DataSource
-
-
-
     // Q Business Index
     const qBusinessIndex = new cdk.CfnResource(this, 'QBusinessIndex', {
       type: 'AWS::QBusiness::Index',
@@ -202,10 +198,6 @@ export class QBusinessStack extends cdk.Stack {
     //   },
     // });
 
-    
-    console.log("📌 ApplicationId:", qBusinessApp.ref);
-    console.log("📌 IndexId:", qBusinessIndex.getAtt('IndexId'));
-    // console.log("📌 WebCrawlerRole ARN:", webCrawlerRole.roleArn);
     // DynamoDB Table for Conversations
     const conversationTable = new dynamodb.Table(this, 'ConversationTable', {
       tableName: config.dynamodb.tableName,
