@@ -82,7 +82,7 @@ phases:
       - echo "Waiting for deployment to complete..."
       - aws amplify get-job --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" --job-id "$DEPLOYMENT_ID" --query 'job.summary.status' --output text
       - echo "Deployment completed, cleaning up temporary files..."
-      - sleep 240
+      - sleep 30
       - aws s3 rm s3://$BUCKET_NAME/frontend-build.zip || echo "File already removed"
       - echo "=== Deployment Complete ==="
       - echo "Backend deployed successfully"
