@@ -248,7 +248,7 @@ export class QBusinessStack extends cdk.Stack {
 
     // Lambda Functions
     const chatLambda = new lambda.Function(this, 'ChatLambdaFunction', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/chat')),
       role: lambdaRole,
@@ -261,7 +261,7 @@ export class QBusinessStack extends cdk.Stack {
     });
 
     const emailLambda = new lambda.Function(this, 'EmailLambdaFunction', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/email')),
       role: lambdaRole,
@@ -274,7 +274,7 @@ export class QBusinessStack extends cdk.Stack {
     });
 
     const conversationLambda = new lambda.Function(this, 'ConversationLambdaFunction', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/conversation')),
       role: lambdaRole,
@@ -286,7 +286,7 @@ export class QBusinessStack extends cdk.Stack {
     });
 
     const translationLambda = new lambda.Function(this, 'TranslationLambdaFunction', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_22_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../lambda/translation')),
       role: lambdaRole,
