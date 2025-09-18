@@ -1,5 +1,5 @@
 PROJECT_NAME=crohns-colitis
-AWS_REGION=us-west-2
+AWS_REGION=us-east-1
 SOURCE_EMAIL=your-mailaddress@xyz.com
 DESTINATION_EMAIL=your-mailaddress@xyz.com
 ACTION=deploy
