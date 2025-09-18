@@ -71,7 +71,7 @@ phases:
         fi
       - aws amplify create-branch --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH_NAME" || echo "Branch already exists"
       - echo "Uploading frontend build to S3..."
-      - BUCKET_NAME="crohns-colitis-deploy-temp"
+      - BUCKET_NAME="crohns-colitis-deploy-${AWS_REGION}-$(aws sts get-caller-identity --query Account --output text)"
       - aws s3 mb s3://$BUCKET_NAME --region $AWS_REGION 2>/dev/null || echo "Bucket already exists"
       - aws s3api put-public-access-block --bucket $BUCKET_NAME --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false 2>/dev/null || echo "Public access already configured"
       - aws s3 cp ../frontend/frontend-build.zip s3://$BUCKET_NAME/frontend-build.zip
