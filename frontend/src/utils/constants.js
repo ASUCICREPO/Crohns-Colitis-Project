@@ -219,4 +219,4 @@ export const BOT_TYPING_SPEED = 50; // Milliseconds per character for typing eff
 
 // --------------------------------------------------------------------------------------------------------//
 // Styling under work, would reccomend keeping it false for now
-export const ALLOW_MARKDOWN_BOT = false; // Set to true to enable markdown support for bot messages
+export const ALLOW_MARKDOWN_BOT = true; // Set to true to enable markdown support for bot messages
